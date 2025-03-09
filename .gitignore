@@ -1,0 +1,67 @@
+# .NET
+.vs/
+bin/
+obj/
+*.sln.ide
+*.sln.docstates
+*.user
+*.suo
+*.userprefs
+*.dll
+*.exe
+
+# Node.js / React / Angular
+node_modules/
+dist/
+build/
+npm-debug.log
+yarn-error.log
+.pnp.*
+.pnp.js
+
+# Visual Studio Code
+.vscode/
+
+# ASP.NET
+project.lock.json
+project.fragment.lock.json
+*.db
+*.db-journal
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+target/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# Logs
+logs/
+*.log
+
+# Miscellaneous
+*.tgz
+*.zip
+*.tar
+*.gz
+*.7z
+*.rar
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Other IDEs
+.idea/
+*.iml 
