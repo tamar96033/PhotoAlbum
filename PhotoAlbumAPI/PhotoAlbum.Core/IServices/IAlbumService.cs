@@ -10,10 +10,10 @@ namespace PhotoAlbum.Core.IServices
     public interface IAlbumService
     {
         //the signatures of the services.
-        Task<List<Album>> GetAlbumsAsync();
-        Task<Album> GetAlbumAsync(int id);
-        Task AddAlbumAsync(Album album);
-        Task UpdateAlbumAsync(int id, Album album);
-        Task DeleteAlbumAsync(int id);
+        Task<List<Album>?> GetAlbumsAsync();
+        Task<Album?> GetAlbumAsync(int id);
+        Task<bool> AddAlbumAsync(Album album);
+        Task<bool> UpdateAlbumAsync(int id, Album album);
+        Task<bool> DeleteAlbumAsync(int id);
     }
 }
