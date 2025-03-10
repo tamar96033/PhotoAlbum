@@ -12,8 +12,8 @@ namespace PhotoAlbum.Data
     public class DataContext : DbContext
     {
         public DbSet<Album> Albums { get; set; }
-        public DbSet<Core.Entities.File> Files { get; set; }
-        public DbSet<FileTag> FileTags { get; set; }
+        public DbSet<Picture> Pictures { get; set; }
+        public DbSet<PictureTag> PictureTags { get; set; }
         public DbSet<Tag> Tags { get; set; }
         
         private readonly IConfiguration _configuration;

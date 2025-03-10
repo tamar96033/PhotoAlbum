@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PhotoAlbum.Core.Entities
 {
-    public class File
+    public class Picture
     {
         [Key]
-        public int FileId { get; set; } 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; } 
 
-        [Required]
+        [Required]  
         [StringLength(100)]
-        public string FileName { get; set; }
+        public string Name { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [DataType(DataType.DateTime)]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
         // Navigation property for the many-to-many relationship
-        public virtual ICollection<FileTag> FileTags { get; set; }
+        public virtual ICollection<PictureTag> PictureTags { get; set; }
     }
 }

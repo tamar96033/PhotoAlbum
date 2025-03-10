@@ -65,3 +65,5 @@ coverage/
 # Other IDEs
 .idea/
 *.iml 
+
+.fake
