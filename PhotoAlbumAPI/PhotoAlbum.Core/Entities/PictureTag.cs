@@ -8,19 +8,20 @@ using System.Threading.Tasks;
 
 namespace PhotoAlbum.Core.Entities
 {
-    public class FileTag
+    public class PictureTag
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("File")]
-        public int FileId { get; set; }
+        [ForeignKey("Picture")]
+        public int PictureId { get; set; }
 
         [ForeignKey("Tag")]
         public int TagId { get; set; }
 
         // Navigation properties
-        public virtual File File { get; set; }
+        public virtual Picture Picture { get; set; }
         public virtual Tag Tag { get; set; }
     }
 }

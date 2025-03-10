@@ -51,7 +51,7 @@ namespace PhotoAlbum.Data.Migrations
                     b.ToTable("Albums");
                 });
 
-            modelBuilder.Entity("PhotoAlbum.Core.Entities.File", b =>
+            modelBuilder.Entity("PhotoAlbum.Core.Entities.Picture", b =>
                 {
                     b.Property<int>("FileId")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace PhotoAlbum.Data.Migrations
                     b.ToTable("Files");
                 });
 
-            modelBuilder.Entity("PhotoAlbum.Core.Entities.FileTag", b =>
+            modelBuilder.Entity("PhotoAlbum.Core.Entities.PictureTag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,9 +116,9 @@ namespace PhotoAlbum.Data.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("PhotoAlbum.Core.Entities.FileTag", b =>
+            modelBuilder.Entity("PhotoAlbum.Core.Entities.PictureTag", b =>
                 {
-                    b.HasOne("PhotoAlbum.Core.Entities.File", "File")
+                    b.HasOne("PhotoAlbum.Core.Entities.Picture", "Picture")
                         .WithMany("FileTags")
                         .HasForeignKey("FileId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -130,12 +130,12 @@ namespace PhotoAlbum.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("File");
+                    b.Navigation("Picture");
 
                     b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("PhotoAlbum.Core.Entities.File", b =>
+            modelBuilder.Entity("PhotoAlbum.Core.Entities.Picture", b =>
                 {
                     b.Navigation("FileTags");
                 });
