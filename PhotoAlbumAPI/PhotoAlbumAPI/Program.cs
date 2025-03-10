@@ -16,6 +16,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IAlbumService, AlbumService>();
 builder.Services.AddScoped<IAlbumRepository, AlbumRepository>();
 
+builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+
 builder.Services.AddDbContext<DataContext>();
 
 var app = builder.Build();
