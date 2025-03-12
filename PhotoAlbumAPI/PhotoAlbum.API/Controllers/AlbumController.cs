@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoAlbum.Core.Entities;
 using PhotoAlbum.Core.IServices;
@@ -7,6 +8,7 @@ namespace PhotoAlbum.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AlbumController : Controller
     {
         private readonly IAlbumService _albumService;
@@ -21,6 +23,7 @@ namespace PhotoAlbum.API.Controllers
 
         //getting the functions from the service
         [HttpGet]
+        [Authorize(Policy = "AdminOnly")]//this is only example to the Policy!!!! - don't leave it
         public async Task<IActionResult> GetAlbumsAsync()
         {
             try

@@ -15,7 +15,12 @@ namespace PhotoAlbum.Data
         public DbSet<Picture> Pictures { get; set; }
         public DbSet<PictureTag> PictureTags { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+
         private readonly IConfiguration _configuration;
 
         public DataContext(IConfiguration configuration)
@@ -26,6 +31,39 @@ namespace PhotoAlbum.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(_configuration["AlbumDB"]);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Seed Roles data
+            modelBuilder.Entity<Role>().HasData(
+                new Role
+                {
+                    Id = 1,
+                    Name = "Admin",
+                    Description = "Administrator role",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new Role
+                {
+                    Id = 2,
+                    Name = "Editor",
+                    Description = "Editor role",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new Role
+                {
+                    Id = 3,
+                    Name = "Viewer",
+                    Description = "Viewer role",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                }
+            );
         }
     }
 }

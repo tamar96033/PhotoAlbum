@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PhotoAlbum.Data;
 
@@ -11,9 +12,11 @@ using PhotoAlbum.Data;
 namespace PhotoAlbum.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250312182959_add-users-tables")]
+    partial class adduserstables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,32 +147,6 @@ namespace PhotoAlbum.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 3, 12, 20, 56, 14, 644, DateTimeKind.Utc).AddTicks(2244),
-                            Description = "Administrator role",
-                            Name = "Admin",
-                            UpdatedAt = new DateTime(2025, 3, 12, 20, 56, 14, 644, DateTimeKind.Utc).AddTicks(2245)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2025, 3, 12, 20, 56, 14, 644, DateTimeKind.Utc).AddTicks(2248),
-                            Description = "Editor role",
-                            Name = "Editor",
-                            UpdatedAt = new DateTime(2025, 3, 12, 20, 56, 14, 644, DateTimeKind.Utc).AddTicks(2248)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2025, 3, 12, 20, 56, 14, 644, DateTimeKind.Utc).AddTicks(2251),
-                            Description = "Viewer role",
-                            Name = "Viewer",
-                            UpdatedAt = new DateTime(2025, 3, 12, 20, 56, 14, 644, DateTimeKind.Utc).AddTicks(2251)
-                        });
                 });
 
             modelBuilder.Entity("PhotoAlbum.Core.Entities.RolePermission", b =>
