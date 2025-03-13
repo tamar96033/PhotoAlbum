@@ -33,7 +33,7 @@ namespace PhotoAlbum.Data
             optionsBuilder.UseSqlServer(_configuration["AlbumDB"]);
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)//putting the roles
         {
             base.OnModelCreating(modelBuilder);
 

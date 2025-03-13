@@ -48,7 +48,7 @@ namespace PhotoAlbum.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Albums");
+                    b.ToTable("Albums", (string)null);
                 });
 
             modelBuilder.Entity("PhotoAlbum.Core.Entities.Permission", b =>
@@ -69,7 +69,7 @@ namespace PhotoAlbum.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("PhotoAlbum.Core.Entities.Picture", b =>
@@ -93,7 +93,7 @@ namespace PhotoAlbum.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pictures");
+                    b.ToTable("Pictures", (string)null);
                 });
 
             modelBuilder.Entity("PhotoAlbum.Core.Entities.PictureTag", b =>
@@ -116,7 +116,7 @@ namespace PhotoAlbum.Data.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("PictureTags");
+                    b.ToTable("PictureTags", (string)null);
                 });
 
             modelBuilder.Entity("PhotoAlbum.Core.Entities.Role", b =>
@@ -143,7 +143,7 @@ namespace PhotoAlbum.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -192,7 +192,7 @@ namespace PhotoAlbum.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RolePermissions");
+                    b.ToTable("RolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("PhotoAlbum.Core.Entities.Tag", b =>
@@ -210,7 +210,7 @@ namespace PhotoAlbum.Data.Migrations
 
                     b.HasKey("TagId");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("PhotoAlbum.Core.Entities.User", b =>
@@ -241,7 +241,7 @@ namespace PhotoAlbum.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("PhotoAlbum.Core.Entities.UserRole", b =>
@@ -264,7 +264,7 @@ namespace PhotoAlbum.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("PhotoAlbum.Core.Entities.PictureTag", b =>

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PhotoAlbum.API.Dto;
+using PhotoAlbum.Core.Dto;
 using PhotoAlbum.Core.Entities;
-using PhotoAlbum.Data;
+using PhotoAlbum.Core.IServices;
 
 namespace PhotoAlbum.API.Controllers
 {
@@ -10,62 +12,96 @@ namespace PhotoAlbum.API.Controllers
     [Route("api/[controller]")]
     public class PictureController : Controller
     {
-        private readonly DataContext _context;
+        private readonly IPictureService _pictureService;
 
-        public PictureController(DataContext context)
+        public PictureController(IPictureService pictureService)
         {
-            _context = context;
+            _pictureService = pictureService;
         }
 
-
-        // POST: api/pictures
-        // מתודה להוספת תמונה חדשה
         [HttpPost]
-        public async Task<ActionResult<Picture>> AddPicture([FromBody] Picture picture)
+        public async Task<IActionResult> AddPicture([FromBody] AddPictureDto dto)
         {
-            if (picture == null)
-            {
-                return BadRequest("הנתונים שהתקבלו ריקים.");
-            }
-
-            // אם נשלחו תגיות עם התמונה (רשימת PictureTags) – נבדוק שהתגיות קיימות במסד הנתונים
-            if (picture.PictureTags != null && picture.PictureTags.Any())
-            {
-                foreach (var pictureTag in picture.PictureTags)
-                {
-                    // בדיקה האם התגית עם המזהה הנתון קיימת
-                    bool tagExists = await _context.Tags.AnyAsync(t => t.TagId == pictureTag.TagId);
-                    if (!tagExists)
-                    {
-                        return BadRequest($"תגית עם מזהה {pictureTag.TagId} לא קיימת.");
-                    }
-                }
-            }
-
-            // הוספת האובייקט למסד הנתונים ושמירה
-            _context.Pictures.Add(picture);
-            await _context.SaveChangesAsync();
-
-            // מחזירים תגובת Created עם המידע של התמונה שנוצרה
-            return CreatedAtAction(nameof(GetPicture), new { id = picture.Id }, picture);
+            await _pictureService.AddPictureAsync(dto.Name, dto.Tags);
+            return Ok("Picture added successfully.");
         }
 
-        // GET: api/pictures/{id}
-        // מתודה לקריאת תמונה על פי מזהה, המשמשת גם ליצירת ה-URI בהודעת CreatedAtAction
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Picture>> GetPicture(int id)
-        {
-            var picture = await _context.Pictures
-                .Include(p => p.PictureTags)
-                .ThenInclude(pt => pt.Tag)
-                .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (picture == null)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePicture(int id)
+        {
+            var result = await _pictureService.DeletePictureAsync(id);
+            if (!result)
+                return NotFound($"Picture with id {id} not found.");
+
+            return Ok($"Picture with id {id} deleted successfully.");
+        }
+
+
+        [HttpPost("{pictureId}/add-tag")]
+        public async Task<IActionResult> AddTagToPicture(int pictureId, [FromBody] string tagName)
+        {
+            var result = await _pictureService.AddTagToPictureAsync(pictureId, tagName);
+            if (!result)
+                return NotFound($"Picture with ID {pictureId} not found.");
+
+            return Ok($"Tag '{tagName}' added to picture {pictureId}.");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPictures()
+        {
+            var pictures = await _pictureService.GetAllPicturesAsync();
+            return Ok(pictures);
+        }
+
+
+        /// <summary>
+        /// GET: /api/Picture/tag/{tagName}
+        /// Returns all pictures that have the specified tag.
+        /// </summary>
+        [HttpGet("tag/{tagName}")]
+        public async Task<IActionResult> GetPicturesByTag(string tagName)
+        {
+            var pictures = await _pictureService.GetPicturesByTagAsync(tagName);
+            if (pictures == null || !pictures.Any())
+            {
+                return NotFound($"No pictures found with the tag: {tagName}");
+            }
+            return Ok(pictures);
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPictureById(int id)
+        {
+            var pictureDto = await _pictureService.GetPictureByIdAsync(id);
+            if (pictureDto == null)
             {
                 return NotFound();
             }
+            return Ok(pictureDto);
+        }
 
-            return picture;
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePicture(int id, [FromBody] PictureDto updateDto)
+        {
+            var result = await _pictureService.UpdatePictureAsync(id, updateDto);
+            if (result)
+            {
+                return Ok();
+            }
+            return NotFound();
+        }
+
+        [HttpDelete("{pictureId}/remove-tag")]
+        public async Task<IActionResult> RemoveTagFromPicture(int pictureId, [FromQuery] string tagName)
+        {
+            var result = await _pictureService.RemoveTagFromPictureAsync(pictureId, tagName);
+            if (!result)
+                return NotFound($"Either picture with id {pictureId} or tag '{tagName}' was not found.");
+            return Ok($"Tag '{tagName}' removed from picture {pictureId} successfully.");
         }
     }
 }

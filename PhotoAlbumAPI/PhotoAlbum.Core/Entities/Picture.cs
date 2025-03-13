@@ -25,6 +25,6 @@ namespace PhotoAlbum.Core.Entities
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation property for the many-to-many relationship
-        public virtual ICollection<PictureTag> PictureTags { get; set; }
+        public virtual ICollection<PictureTag> PictureTags { get; set; } = new List<PictureTag>();
     }
 }

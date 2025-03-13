@@ -18,11 +18,13 @@ namespace PhotoAlbum.Service.Services
     {
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
+        private readonly IRepositoryManager _repositoryManager;
 
-        public AuthService(IConfiguration configuration, IUserRepository userRepository)
+        public AuthService(IConfiguration configuration, IUserRepository userRepository, IRepositoryManager repositoryManager)
         {
             _configuration = configuration;
             _userRepository = userRepository;
+            _repositoryManager = repositoryManager;
         }
 
         public async Task<string> GenerateJwtTokenAsync(string username, string password)
@@ -63,8 +65,9 @@ namespace PhotoAlbum.Service.Services
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: credentials
             );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var result = new JwtSecurityTokenHandler().WriteToken(token); 
+            await _repositoryManager.SaveAsync();
+            return result;
         }
 
 
@@ -79,38 +82,10 @@ namespace PhotoAlbum.Service.Services
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-
             // Call the repository method to add the user and assign the role.
-            return await _userRepository.RegisterUserWithRoleAsync(user, dto.RoleName);
+            var result = await _userRepository.RegisterUserWithRoleAsync(user, dto.RoleName);
+            await _repositoryManager.SaveAsync();
+            return result;
         }
-
-        //from Malka bruk
-        //public string GenerateJwtToken(string username, string[] roles)
-        //{
-        //    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        //    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        //    var claims = new List<Claim>
-        //{
-        //    new Claim(ClaimTypes.Name, username)
-        //};
-
-        //    // הוספת תפקידים כ-Claims
-        //    foreach (var role in roles)
-        //    {
-        //        claims.Add(new Claim(ClaimTypes.Role, role));
-        //    }
-
-        //    var token = new JwtSecurityToken(
-        //        issuer: _configuration["Jwt:Issuer"],
-        //        audience: _configuration["Jwt:Audience"],
-        //        claims: claims,
-        //        expires: DateTime.Now.AddMinutes(30),
-        //        signingCredentials: credentials
-        //    );
-
-        //    return new JwtSecurityTokenHandler().WriteToken(token);
-        //}
-
     }
 }

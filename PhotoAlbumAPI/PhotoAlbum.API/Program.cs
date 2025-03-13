@@ -6,6 +6,7 @@ using PhotoAlbum.Core.IRepositories;
 using PhotoAlbum.Core.IServices;
 using PhotoAlbum.Data;
 using PhotoAlbum.Data.Repositories;
+using PhotoAlbum.Service;
 using PhotoAlbum.Service.Services;
 using System.Text;
 
@@ -54,10 +55,16 @@ builder.Services.AddScoped<IAlbumRepository, AlbumRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<IPictureRepository, PictureRepository>();
+builder.Services.AddScoped<IPictureService, PictureService>();
+builder.Services.AddScoped<ITagService, TagService>();
 
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 builder.Services.AddDbContext<DataContext>();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 
 builder.Services.AddAuthentication(options =>
