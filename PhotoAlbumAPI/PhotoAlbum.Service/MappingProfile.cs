@@ -19,8 +19,7 @@ namespace PhotoAlbum.Service
                         ? src.PictureTags.Select(pt => pt.Tag.Name).ToList()
                         : new List<string>()));
 
-            CreateMap<Tag, TagDto>().ReverseMap();  // Mapping between Tag and TagDto
-
+            CreateMap<Tag, TagDto>().ReverseMap();
         }
     }
 }

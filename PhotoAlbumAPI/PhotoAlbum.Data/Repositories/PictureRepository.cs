@@ -96,14 +96,14 @@ namespace PhotoAlbum.Data.Repositories
                     var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
                     if (tag != null)
                     {
-                        picture.PictureTags.Add(new PictureTag { PictureId = picture.Id, TagId = tag.TagId });
+                        picture.PictureTags.Add(new PictureTag { PictureId = picture.Id, TagId = tag.Id });
                     }
                     else
                     {
                         var newTag = new Tag { Name = tagName };
                         _context.Tags.Add(newTag);
                         await _context.SaveChangesAsync(); // Save to get the new tag's ID
-                        picture.PictureTags.Add(new PictureTag { PictureId = picture.Id, TagId = newTag.TagId });
+                        picture.PictureTags.Add(new PictureTag { PictureId = picture.Id, TagId = newTag.Id });
                     }
                 }
             }

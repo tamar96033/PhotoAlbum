@@ -32,5 +32,24 @@ namespace PhotoAlbum.Data.Repositories
         {
             return await _context.Tags.ToListAsync();
         }
+
+        public async Task AddTagAsync(Tag tag)
+        {
+            await _context.Tags.AddAsync(tag);
+        }
+
+        public async Task<Tag?> GetTagByIdAsync(int id)
+        {
+            return await _context.Tags.FindAsync(id);
+        }
+
+        public void UpdateTag(Tag tag)
+        {
+            _context.Tags.Update(tag);
+        }
+        public void DeleteTag(Tag tag)
+        {
+            _context.Tags.Remove(tag);
+        }
     }
 }

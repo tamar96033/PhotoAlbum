@@ -12,5 +12,9 @@ namespace PhotoAlbum.Core.IRepositories
         Task<Tag> GetTagByNameAsync(string name);
         Tag AddTag(Tag tag);
         Task<IEnumerable<Tag>> GetAllTagsAsync();
+        Task AddTagAsync(Tag tag);
+        Task<Tag?> GetTagByIdAsync(int id);
+        void UpdateTag(Tag tag);
+        void DeleteTag(Tag tag);
     }
 }

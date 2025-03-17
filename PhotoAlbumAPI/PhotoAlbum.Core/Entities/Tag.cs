@@ -12,7 +12,7 @@ namespace PhotoAlbum.Core.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int TagId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(50)]

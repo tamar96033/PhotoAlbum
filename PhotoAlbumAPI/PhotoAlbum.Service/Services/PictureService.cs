@@ -62,7 +62,7 @@ namespace PhotoAlbum.Service.Services
 
                 picture.PictureTags.Add(new PictureTag
                 {
-                    TagId = tag.TagId,
+                    TagId = tag.Id,
                     Tag = tag
                 });
             }
@@ -95,13 +95,13 @@ namespace PhotoAlbum.Service.Services
             }
 
             // Prevent duplicate PictureTag
-            if (picture.PictureTags.Any(pt => pt.TagId == tag.TagId))
+            if (picture.PictureTags.Any(pt => pt.TagId == tag.Id))
                 return true; // Tag already associated
 
             var pictureTag = new PictureTag
             {
                 PictureId = pictureId,
-                TagId = tag.TagId
+                TagId = tag.Id
             };
 
             _pictureRepository.AddPictureTag(pictureTag);
