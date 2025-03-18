@@ -50,6 +50,7 @@ namespace PhotoAlbum.API.Controllers
 
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Picture>), 200)]
         public async Task<IActionResult> GetAllPictures()
         {
             var pictures = await _pictureService.GetAllPicturesAsync();

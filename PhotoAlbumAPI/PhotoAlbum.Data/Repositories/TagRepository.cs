@@ -14,7 +14,7 @@ namespace PhotoAlbum.Data.Repositories
         private readonly DataContext _context;
         public TagRepository(DataContext context)
         {
-            _context = context; 
+            _context = context;
         }
 
         public async Task<Tag> GetTagByNameAsync(string name)
