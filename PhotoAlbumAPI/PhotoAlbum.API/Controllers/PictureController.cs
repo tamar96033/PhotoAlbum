@@ -46,8 +46,8 @@ namespace PhotoAlbum.API.Controllers
 
         [HttpPost("{pictureId}/add-tag")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddTagToPicture(int pictureId, [FromBody] string tagName)
         {
             var result = await _pictureService.AddTagToPictureAsync(pictureId, tagName);

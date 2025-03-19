@@ -25,8 +25,8 @@ namespace PhotoAlbum.API.Controllers
         [HttpGet]
         [Authorize(Policy = "AdminOnly")]//this is only example to the Policy!!!! - don't leave it
         [ProducesResponseType(typeof(IEnumerable<Album>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAlbumsAsync()
         {
             try
@@ -52,7 +52,7 @@ namespace PhotoAlbum.API.Controllers
         [HttpGet("id")]
         [ProducesResponseType(typeof(Album), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAlbumAsync(int id)
         {
             try
@@ -79,7 +79,7 @@ namespace PhotoAlbum.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(Album), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAlbumAsync([FromBody] Album album)
         {
             if (album == null)
@@ -111,7 +111,7 @@ namespace PhotoAlbum.API.Controllers
         [ProducesResponseType(typeof(Album), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAlbumAsync(int id, [FromBody] Album album)
         {
             try
@@ -137,7 +137,7 @@ namespace PhotoAlbum.API.Controllers
         [HttpDelete("id")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteAlbumAsync(int id)
         {
             try
