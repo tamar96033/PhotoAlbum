@@ -28,6 +28,8 @@ namespace PhotoAlbum.API.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login([FromBody] LoginUserDto user)
         {
             // Validate the user and generate the token
@@ -44,6 +46,7 @@ namespace PhotoAlbum.API.Controllers
 
         [HttpPost("register")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto dto)
         {
             if (!ModelState.IsValid)

@@ -20,6 +20,9 @@ namespace PhotoAlbum.API.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddPicture([FromBody] AddPictureDto dto)
         {
             await _pictureService.AddPictureAsync(dto.Name, dto.Tags);
@@ -28,6 +31,9 @@ namespace PhotoAlbum.API.Controllers
 
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeletePicture(int id)
         {
             var result = await _pictureService.DeletePictureAsync(id);
@@ -39,6 +45,9 @@ namespace PhotoAlbum.API.Controllers
 
 
         [HttpPost("{pictureId}/add-tag")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddTagToPicture(int pictureId, [FromBody] string tagName)
         {
             var result = await _pictureService.AddTagToPictureAsync(pictureId, tagName);
@@ -50,7 +59,8 @@ namespace PhotoAlbum.API.Controllers
 
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<Picture>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<Picture>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllPictures()
         {
             var pictures = await _pictureService.GetAllPicturesAsync();
@@ -63,6 +73,8 @@ namespace PhotoAlbum.API.Controllers
         /// Returns all pictures that have the specified tag.
         /// </summary>
         [HttpGet("tag/{tagName}")]
+        [ProducesResponseType(typeof(IEnumerable<Picture>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPicturesByTag(string tagName)
         {
             var pictures = await _pictureService.GetPicturesByTagAsync(tagName);
@@ -75,6 +87,8 @@ namespace PhotoAlbum.API.Controllers
 
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(PictureDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPictureById(int id)
         {
             var pictureDto = await _pictureService.GetPictureByIdAsync(id);
@@ -86,6 +100,9 @@ namespace PhotoAlbum.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdatePicture(int id, [FromBody] PictureDto updateDto)
         {
             var result = await _pictureService.UpdatePictureAsync(id, updateDto);
@@ -97,6 +114,9 @@ namespace PhotoAlbum.API.Controllers
         }
 
         [HttpDelete("{pictureId}/remove-tag")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RemoveTagFromPicture(int pictureId, [FromQuery] string tagName)
         {
             var result = await _pictureService.RemoveTagFromPictureAsync(pictureId, tagName);
