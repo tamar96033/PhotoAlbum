@@ -27,6 +27,7 @@ namespace PhotoAlbum.API.Controllers
         [ProducesResponseType(typeof(IEnumerable<Album>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize]
         public async Task<IActionResult> GetAlbumsAsync()
         {
             try

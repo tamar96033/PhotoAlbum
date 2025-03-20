@@ -2,6 +2,7 @@ using Amazon.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PhotoAlbum.API;
 using PhotoAlbum.Core.IRepositories;
 using PhotoAlbum.Core.IServices;
 using PhotoAlbum.Data;
@@ -49,6 +50,11 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
+});
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.OperationFilter<AddAuthHeaderOperationFilter>();
 });
 
 builder.Services.AddScoped<IAlbumService, AlbumService>();
