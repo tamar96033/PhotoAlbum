@@ -19,15 +19,17 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    albumAll(): Promise<Album[]> {
+    albumAll(authorization: string | undefined): Promise<Album[]> {
         let url_ = this.baseUrl + "/api/Album";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Accept": "text/plain"
             }
         };
@@ -74,10 +76,11 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @param body (optional) 
      * @return OK
      */
-    album(body: Album | undefined): Promise<Album> {
+    album(authorization: string | undefined, body: Album | undefined): Promise<Album> {
         let url_ = this.baseUrl + "/api/Album";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -87,6 +90,7 @@ export class ApiClient {
             body: content_,
             method: "POST",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
             }
@@ -128,9 +132,10 @@ export class ApiClient {
 
     /**
      * @param id (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    idGET(id: number | undefined): Promise<Album> {
+    idGET(id: number | undefined, authorization: string | undefined): Promise<Album> {
         let url_ = this.baseUrl + "/api/Album/id?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -141,6 +146,7 @@ export class ApiClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Accept": "text/plain"
             }
         };
@@ -181,10 +187,11 @@ export class ApiClient {
 
     /**
      * @param id (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @param body (optional) 
      * @return OK
      */
-    idPUT(id: number | undefined, body: Album | undefined): Promise<Album> {
+    idPUT(id: number | undefined, authorization: string | undefined, body: Album | undefined): Promise<Album> {
         let url_ = this.baseUrl + "/api/Album/id?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -198,6 +205,7 @@ export class ApiClient {
             body: content_,
             method: "PUT",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
             }
@@ -246,9 +254,10 @@ export class ApiClient {
 
     /**
      * @param id (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    idDELETE(id: number | undefined): Promise<void> {
+    idDELETE(id: number | undefined, authorization: string | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/Album/id?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -259,6 +268,7 @@ export class ApiClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
             }
         };
 
@@ -388,10 +398,11 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @param body (optional) 
      * @return OK
      */
-    picturePOST(body: AddPictureDto | undefined): Promise<void> {
+    picturePOST(authorization: string | undefined, body: AddPictureDto | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/Picture";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -401,6 +412,7 @@ export class ApiClient {
             body: content_,
             method: "POST",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
             }
         };
@@ -442,15 +454,17 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    pictureAll(): Promise<Picture[]> {
+    pictureAll(authorization: string | undefined): Promise<Picture[]> {
         let url_ = this.baseUrl + "/api/Picture";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Accept": "text/plain"
             }
         };
@@ -490,9 +504,10 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    pictureDELETE(id: number): Promise<void> {
+    pictureDELETE(id: number, authorization: string | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/Picture/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -502,6 +517,7 @@ export class ApiClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
             }
         };
 
@@ -542,9 +558,10 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    pictureGET(id: number): Promise<PictureDto> {
+    pictureGET(id: number, authorization: string | undefined): Promise<PictureDto> {
         let url_ = this.baseUrl + "/api/Picture/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -554,6 +571,7 @@ export class ApiClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Accept": "text/plain"
             }
         };
@@ -589,10 +607,11 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @param body (optional) 
      * @return OK
      */
-    picturePUT(id: number, body: PictureDto | undefined): Promise<void> {
+    picturePUT(id: number, authorization: string | undefined, body: PictureDto | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/Picture/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -605,6 +624,7 @@ export class ApiClient {
             body: content_,
             method: "PUT",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
             }
         };
@@ -644,10 +664,11 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @param body (optional) 
      * @return OK
      */
-    addTag(pictureId: number, body: string | undefined): Promise<void> {
+    addTag(pictureId: number, authorization: string | undefined, body: string | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/Picture/{pictureId}/add-tag";
         if (pictureId === undefined || pictureId === null)
             throw new Error("The parameter 'pictureId' must be defined.");
@@ -660,6 +681,7 @@ export class ApiClient {
             body: content_,
             method: "POST",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
             }
         };
@@ -696,9 +718,10 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    tag(tagName: string): Promise<Picture[]> {
+    tag(tagName: string, authorization: string | undefined): Promise<Picture[]> {
         let url_ = this.baseUrl + "/api/Picture/tag/{tagName}";
         if (tagName === undefined || tagName === null)
             throw new Error("The parameter 'tagName' must be defined.");
@@ -708,6 +731,7 @@ export class ApiClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Accept": "text/plain"
             }
         };
@@ -751,9 +775,10 @@ export class ApiClient {
 
     /**
      * @param tagName (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    removeTag(pictureId: number, tagName: string | undefined): Promise<void> {
+    removeTag(pictureId: number, tagName: string | undefined, authorization: string | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/Picture/{pictureId}/remove-tag?";
         if (pictureId === undefined || pictureId === null)
             throw new Error("The parameter 'pictureId' must be defined.");
@@ -767,6 +792,7 @@ export class ApiClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
             }
         };
 
@@ -805,15 +831,17 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    tagAll(): Promise<string[]> {
+    tagAll(authorization: string | undefined): Promise<string[]> {
         let url_ = this.baseUrl + "/api/Tag";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Accept": "text/plain"
             }
         };
@@ -856,10 +884,11 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @param body (optional) 
      * @return Created
      */
-    tagPOST(body: TagDto | undefined): Promise<Tag> {
+    tagPOST(authorization: string | undefined, body: TagDto | undefined): Promise<Tag> {
         let url_ = this.baseUrl + "/api/Tag";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -869,6 +898,7 @@ export class ApiClient {
             body: content_,
             method: "POST",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
             }
@@ -905,9 +935,10 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    tagGET(id: number): Promise<Tag> {
+    tagGET(id: number, authorization: string | undefined): Promise<Tag> {
         let url_ = this.baseUrl + "/api/Tag/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -917,6 +948,7 @@ export class ApiClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Accept": "text/plain"
             }
         };
@@ -953,9 +985,10 @@ export class ApiClient {
 
     /**
      * @param name (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return No Content
      */
-    tagPUT(id: number, name: string | undefined): Promise<void> {
+    tagPUT(id: number, name: string | undefined, authorization: string | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/Tag/{id}?";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -969,6 +1002,7 @@ export class ApiClient {
         let options_: RequestInit = {
             method: "PUT",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
             }
         };
 
@@ -1000,9 +1034,10 @@ export class ApiClient {
     }
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return No Content
      */
-    tagDELETE(id: number): Promise<void> {
+    tagDELETE(id: number, authorization: string | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/Tag/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1012,6 +1047,7 @@ export class ApiClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
             }
         };
 
@@ -1044,9 +1080,10 @@ export class ApiClient {
 
     /**
      * @param fileName (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    presignedUrl(fileName: string | undefined): Promise<void> {
+    presignedUrl(fileName: string | undefined, authorization: string | undefined): Promise<void> {
         let url_ = this.baseUrl + "/presigned-url?";
         if (fileName === null)
             throw new Error("The parameter 'fileName' cannot be null.");
@@ -1057,6 +1094,7 @@ export class ApiClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
             }
         };
 

@@ -15,7 +15,10 @@ const Pictures = () => {
 
             try {
                 // const result = await apiClient.pictureAll()
-                const result = await apiClient.pictureAll()
+                const token = localStorage.getItem('token')
+                console.log(token);
+                
+                const result = await apiClient.pictureAll(token!)
                 // console.log('func',apiClient.pictureGET);
                 console.log('result', result);
 

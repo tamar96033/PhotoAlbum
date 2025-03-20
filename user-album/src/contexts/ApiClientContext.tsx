@@ -1,3 +1,38 @@
+// // src/context/AuthContext.tsx
+
+// import React, { createContext, useContext, useEffect, useState } from "react";
+// import { AuthService } from "../services/AuthService";
+
+// const AuthContext = createContext<any>(null);
+
+// export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+//   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+//   useEffect(() => {
+//     const expired = AuthService.isTokenExpired();
+//     setIsAuthenticated(!expired);
+//   }, []);
+
+//   const login = (token: string) => {
+//     AuthService.saveToken(token);
+//     setIsAuthenticated(true);
+//   };
+
+//   const logout = () => {
+//     AuthService.removeToken();
+//     setIsAuthenticated(false);
+//   };
+
+//   return (
+//     <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
+// export const useAuth = () => useContext(AuthContext);
+
+
 import { createContext } from "react";
 import { ApiClient } from "../api/client";
 import { useContext } from "react";
