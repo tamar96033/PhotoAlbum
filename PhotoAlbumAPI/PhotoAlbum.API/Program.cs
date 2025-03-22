@@ -70,7 +70,9 @@ builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 builder.Services.AddDbContext<DataContext>();
-
+//builder.Services.AddDbContext<DataContext>(options =>
+//    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+//        new MySqlServerVersion(new Version(8, 0, 23))));
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
