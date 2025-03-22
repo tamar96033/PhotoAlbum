@@ -1,5 +1,6 @@
 using Amazon.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PhotoAlbum.API;
@@ -10,7 +11,6 @@ using PhotoAlbum.Data.Repositories;
 using PhotoAlbum.Service;
 using PhotoAlbum.Service.Services;
 using System.Text;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +70,7 @@ builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 builder.Services.AddDbContext<DataContext>();
+
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
