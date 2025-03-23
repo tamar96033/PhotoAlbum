@@ -8,7 +8,148 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-export class ApiClient {
+export interface IApiClient {
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    albumAll(authorization: string | undefined): Promise<Album[]>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @param body (optional) 
+     * @return OK
+     */
+    album(authorization: string | undefined, body: Album | undefined): Promise<Album>;
+
+    /**
+     * @param id (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    idGET(id: number | undefined, authorization: string | undefined): Promise<Album>;
+
+    /**
+     * @param id (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @param body (optional) 
+     * @return OK
+     */
+    idPUT(id: number | undefined, authorization: string | undefined, body: Album | undefined): Promise<Album>;
+
+    /**
+     * @param id (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    idDELETE(id: number | undefined, authorization: string | undefined): Promise<void>;
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    login(body: LoginUserDto | undefined): Promise<any>;
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    register(body: RegisterUserDto | undefined): Promise<any>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @param body (optional) 
+     * @return OK
+     */
+    picturePOST(authorization: string | undefined, body: AddPictureDto | undefined): Promise<void>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    pictureAll(authorization: string | undefined): Promise<Picture[]>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    pictureDELETE(id: number, authorization: string | undefined): Promise<void>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    pictureGET(id: number, authorization: string | undefined): Promise<PictureDto>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @param body (optional) 
+     * @return OK
+     */
+    picturePUT(id: number, authorization: string | undefined, body: PictureDto | undefined): Promise<void>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @param body (optional) 
+     * @return OK
+     */
+    addTag(pictureId: number, authorization: string | undefined, body: string | undefined): Promise<void>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    tag(tagName: string, authorization: string | undefined): Promise<Picture[]>;
+
+    /**
+     * @param tagName (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    removeTag(pictureId: number, tagName: string | undefined, authorization: string | undefined): Promise<void>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    tagAll(authorization: string | undefined): Promise<string[]>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @param body (optional) 
+     * @return Created
+     */
+    tagPOST(authorization: string | undefined, body: TagDto | undefined): Promise<Tag>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    tagGET(id: number, authorization: string | undefined): Promise<Tag>;
+
+    /**
+     * @param name (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return No Content
+     */
+    tagPUT(id: number, name: string | undefined, authorization: string | undefined): Promise<void>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return No Content
+     */
+    tagDELETE(id: number, authorization: string | undefined): Promise<void>;
+
+    /**
+     * @param fileName (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    presignedUrl(fileName: string | undefined, authorization: string | undefined): Promise<void>;
+}
+
+export class ApiClient implements IApiClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;

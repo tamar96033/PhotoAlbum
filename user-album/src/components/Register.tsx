@@ -1,20 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RegisterUserDto } from "../api/client"
-import { useApiClient } from "../contexts/ApiClientContext";
+// import { useApiClient } from "../contexts/ApiClientContext";
 import { Stack, TextField, Button, Paper } from "@mui/material";
+import { useApiClient } from "../contexts/ApiClientContext";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [roleName, setRoleName] = useState<string>('');
-
+    const [token, setToken] = useState<string | null>(null)
+    const navigate = useNavigate();
+    
     const apiClient = useApiClient()
 
+  useEffect(()=>{
+    
+    if (token != null) {
+      console.log(token);
+      localStorage.setItem('token', token!)
+      navigate("/");
+
+    }
+  },[token, navigate])
+  
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        // Create an instance of RegisterUserDto
         const userDto = new RegisterUserDto({
             name,
             email,
@@ -24,7 +37,9 @@ const Register = () => {
 
         try {
             const response = await apiClient.register(userDto)
-            console.log('response', response);
+            
+            console.log('response.token', response.token);
+            setToken(response.token)
         }
         catch (error: any) {
             console.log(error.message);
@@ -33,9 +48,6 @@ const Register = () => {
     }
     return (<>
         <Paper elevation={4} sx={{ p: 4, maxWidth: 400, mx: "auto" }}>
-            {/* <Typography variant="h5" align="center" mb={3}>
-        Register
-      </Typography> */}
             <form onSubmit={handleSubmit}>
                 <Stack spacing={2}>
                     <TextField
@@ -56,7 +68,7 @@ const Register = () => {
                         fullWidth
                     />
                     <TextField
-                        label="Password"
+                        label="Password"    
                         type="password"
                         variant="outlined"
                         value={password}

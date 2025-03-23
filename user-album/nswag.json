@@ -10,7 +10,7 @@
   },
   "codeGenerators": {
     "openApiToTypeScriptClient": {
-      "className": "ApiClient",
+      "className": "ApiClient", 
       "moduleName": "",
       "namespace": "",
       "typeScriptVersion": 5.7,
@@ -24,7 +24,7 @@
       "dateTimeType": "Date",
       "nullValue": "Undefined",
       "generateClientClasses": true,
-      "generateClientInterfaces": false,
+      "generateClientInterfaces": true,
       "generateOptionalParameters": false,
       "exportTypes": true,
       "wrapDtoExceptions": false,
@@ -67,7 +67,8 @@
       "serviceHost": null,
       "serviceSchemes": null,
       "output": "src/api/client.ts",
-      "newLineBehavior": "Auto"
+      "newLineBehavior": "Auto",
+      "fetchWithCredentials": true
     }
   }
 }
