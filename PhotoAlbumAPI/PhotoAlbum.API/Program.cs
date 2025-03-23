@@ -111,7 +111,8 @@ builder.Services.AddCors(options =>
     {
         policy.AllowAnyOrigin()  // Allow all origins
               .AllowAnyMethod()  // Allow any HTTP method (GET, POST, etc.)
-              .AllowAnyHeader(); // Allow any headers
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
