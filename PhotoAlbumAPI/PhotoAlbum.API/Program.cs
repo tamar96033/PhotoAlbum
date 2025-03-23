@@ -109,10 +109,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("https://photoalbumclient.onrender.com")
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
+        policy.AllowAnyOrigin()  // Allow all origins
+              .AllowAnyMethod()  // Allow any HTTP method (GET, POST, etc.)
+              .AllowAnyHeader();
     });
 });
 
