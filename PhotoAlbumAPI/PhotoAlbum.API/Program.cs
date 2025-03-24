@@ -1,6 +1,5 @@
 using Amazon.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PhotoAlbum.API;
@@ -10,7 +9,6 @@ using PhotoAlbum.Data;
 using PhotoAlbum.Data.Repositories;
 using PhotoAlbum.Service;
 using PhotoAlbum.Service.Services;
-using System.Linq;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
