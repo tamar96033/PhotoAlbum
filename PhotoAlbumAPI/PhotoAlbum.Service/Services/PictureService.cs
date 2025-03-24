@@ -33,14 +33,14 @@ namespace PhotoAlbum.Service.Services
 
             if (picture == null)
             {
-                return null; // Or throw exception if needed
+                return new PictureDto(); // Or throw exception if needed
             }
 
             // Mapping the picture to PictureDto and including the tags
             var pictureDto = _mapper.Map<PictureDto>(picture);
 
             // Now populate the tags
-            pictureDto.Tags = picture.PictureTags?.Select(pt => pt.Tag.Name).ToList() ?? new List<string>();
+            pictureDto.Tags = picture.PictureTags?.Select(pt => pt.Tag.Name ?? "").ToList() ?? new List<string>();
 
             return pictureDto;
         }
@@ -129,14 +129,14 @@ namespace PhotoAlbum.Service.Services
                 return false;
 
             // Update picture properties
-            picture.Name = updateDto.Name;
+            picture.Name = updateDto.Name ?? "";
             // Update other fields as needed
 
             // Update the picture in the repository
             _pictureRepository.UpdatePicture(picture);
 
             // Now update the tags using the repository method
-            await _pictureRepository.UpdatePictureTagsAsync(id, updateDto.Tags);
+            await _pictureRepository.UpdatePictureTagsAsync(id, updateDto.Tags ?? new List<string>());
 
             // Save all changes
             await _repositoryManager.SaveAsync();

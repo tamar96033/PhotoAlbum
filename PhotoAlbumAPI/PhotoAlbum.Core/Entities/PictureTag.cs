@@ -21,7 +21,7 @@ namespace PhotoAlbum.Core.Entities
         public int TagId { get; set; }
 
         // Navigation properties
-        public virtual Picture Picture { get; set; }
-        public virtual Tag Tag { get; set; }
+        public required virtual Picture Picture { get; set; }
+        public required virtual Tag Tag { get; set; }
     }
 }

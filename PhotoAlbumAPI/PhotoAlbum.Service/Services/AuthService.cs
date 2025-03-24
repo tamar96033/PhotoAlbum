@@ -32,14 +32,14 @@ namespace PhotoAlbum.Service.Services
             var user = await _userRepository.GetUserByNameAsync(username);
             if (user == null || user.Password != password) // Ensure password check
             {
-                return null; // Invalid user or password
+                return ""; // Invalid user or password
             }
 
             // Get the roles associated with the user
             var roles = await _userRepository.GetRolesByUserIdAsync(user.Id);
             if (roles == null || !roles.Any())
             {
-                return null; // No roles found
+                return ""; // No roles found
             }
 
             var roleNames = roles.Select(r => r.Name).ToArray();
@@ -47,12 +47,12 @@ namespace PhotoAlbum.Service.Services
             // Add claims for roles
             var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.Name)
+            new Claim(ClaimTypes.Name, user.Name ?? "Unknown")
         };
 
             foreach (var role in roleNames)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(ClaimTypes.Role, role ?? "Unknown"));
             }
 
             // Generate JWT token
@@ -83,6 +83,9 @@ namespace PhotoAlbum.Service.Services
                 UpdatedAt = DateTime.UtcNow
             };
             // Call the repository method to add the user and assign the role.
+            if(dto.RoleName == null)
+                return false;
+
             var result = await _userRepository.RegisterUserWithRoleAsync(user, dto.RoleName);
             await _repositoryManager.SaveAsync();
             return result;

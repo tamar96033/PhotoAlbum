@@ -9,7 +9,7 @@ namespace PhotoAlbum.Core.IRepositories
 {
     public interface IUserRepository
     {
-        Task<User> GetUserByNameAsync(string username);
+        Task<User?> GetUserByNameAsync(string username);
         Task<IEnumerable<Role>> GetRolesByUserIdAsync(int userId);
         Task<IEnumerable<Permission>> GetPermissionsByRoleIdAsync(int roleId);
         Task<Role> GetRoleByNameAsync(string roleName);

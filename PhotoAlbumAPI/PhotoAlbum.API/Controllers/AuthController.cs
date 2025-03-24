@@ -59,7 +59,7 @@ namespace PhotoAlbum.API.Controllers
             {
                 return BadRequest("User registration failed. Possibly the user already exists or the role was not found.");
             }
-            var token = await _authService.GenerateJwtTokenAsync(dto.Name, dto.Password);
+            var token = await _authService.GenerateJwtTokenAsync(dto.Name ?? "", dto.Password ?? "");
 
             return Ok(new { Token = token });
         }

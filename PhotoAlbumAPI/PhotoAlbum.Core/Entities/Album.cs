@@ -16,10 +16,10 @@ namespace PhotoAlbum.Core.Entities
 
         [Required]
         [StringLength(50)]
-        public string Title { get; set; }
+        public required string Title { get; set; }
 
         [StringLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

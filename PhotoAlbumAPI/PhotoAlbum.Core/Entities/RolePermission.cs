@@ -17,12 +17,13 @@ namespace PhotoAlbum.Core.Entities
         public int RoleId { get; set; }
 
         [ForeignKey("RoleId")]
-        public Role Role { get; set; }
+        [Required]
+        public required Role Role { get; set; }
 
         [Required]
         public int PermissionId { get; set; }
 
         [ForeignKey("PermissionId")]
-        public Permission Permission { get; set; }
+        public Permission? Permission { get; set; }
     }
 }

@@ -13,6 +13,6 @@ namespace PhotoAlbum.Core.Dto
         public string? Name { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public List<string>? Tags { get; set; }
+        public List<string>? Tags { get; set; } = new List<string>();
     }
 }

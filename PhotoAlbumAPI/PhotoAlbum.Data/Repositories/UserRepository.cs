@@ -19,7 +19,7 @@ namespace PhotoAlbum.Data.Repositories
         }
 
         // Get a user by name 
-        public async Task<User> GetUserByNameAsync(string username)
+        public async Task<User?> GetUserByNameAsync(string username)
         {
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.Name == username);
@@ -45,14 +45,14 @@ namespace PhotoAlbum.Data.Repositories
 
         public async Task<Role> GetRoleByNameAsync(string roleName)
         {
-            return await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+            return await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName) ?? new Role();
         }
 
 
         public async Task<bool> RegisterUserWithRoleAsync(User user, string roleName)
         {
             // Check if user already exists
-            if (await GetUserByNameAsync(user.Name) != null)
+            if (await GetUserByNameAsync(user.Name ?? "") != null)
                 return false;
 
             // Get the role
@@ -65,10 +65,10 @@ namespace PhotoAlbum.Data.Repositories
             await _context.SaveChangesAsync();
 
             // Create the user-role association
-            var userRole = new UserRole
+            var userRole = new UserRole(user, role)
             {
-                UserId = user.Id,
-                RoleId = role.Id
+                User = user,
+                Role = role
             };
 
             _context.UserRoles.Add(userRole);

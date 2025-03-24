@@ -16,7 +16,7 @@ namespace PhotoAlbum.Core.Entities
 
         [Required]  
         [StringLength(100)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
