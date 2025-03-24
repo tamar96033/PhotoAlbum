@@ -127,7 +127,7 @@ builder.Services.AddCors(options =>
         // Add localhost only in development
         if (builder.Environment.IsDevelopment())
         {
-            origins = origins.Concat(new[] { "http://localhost:5173", "https://photoalbumclient.onrender.com" }).ToArray();
+            origins = origins.Concat(new[] { "http://localhost:5173" }).ToArray();
 
         }
 
@@ -153,6 +153,20 @@ app.UseHttpsRedirection();
 //app.UseCors("AllowSpecificOrigin");
 //app.UseCors("AllowLocalhost");
 app.UseCors("AllowFrontend");
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("Request Origin: " + context.Request.Headers["Origin"]);
+
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = 200;
+        await context.Response.CompleteAsync();
+        return;
+    }
+
+    await next();
+});
 
 
 app.UseAuthentication();
