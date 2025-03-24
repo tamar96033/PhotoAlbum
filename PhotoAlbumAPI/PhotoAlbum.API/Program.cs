@@ -10,6 +10,7 @@ using PhotoAlbum.Data;
 using PhotoAlbum.Data.Repositories;
 using PhotoAlbum.Service;
 using PhotoAlbum.Service.Services;
+using System.Linq;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -105,16 +106,38 @@ builder.Services.AddAuthorization(options =>
 
 
 // Add services to the container.
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowSpecificOrigin", policy =>
+//    {
+//        policy.WithOrigins("https://photoalbumclient.onrender.com", "http://localhost:5173")
+//              .AllowAnyMethod()
+//              .AllowAnyHeader()
+//              .AllowCredentials();
+//    });
+//});
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://photoalbumclient.onrender.com", "http://localhost:5173")
-              .AllowAnyMethod()
+        var origins = new[] {
+            "https://photoalbumclient.onrender.com"
+        };
+
+        // Add localhost only in development
+        if (builder.Environment.IsDevelopment())
+        {
+            origins = origins.Concat(new[] { "http://localhost:5173", "https://photoalbumclient.onrender.com" }).ToArray();
+
+        }
+
+        policy.WithOrigins(origins)
               .AllowAnyHeader()
+              .AllowAnyMethod()
               .AllowCredentials();
     });
 });
+
 
 var app = builder.Build();
 
@@ -127,8 +150,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowSpecificOrigin");
-app.UseCors("AllowLocalhost");
+//app.UseCors("AllowSpecificOrigin");
+//app.UseCors("AllowLocalhost");
+app.UseCors("AllowFrontend");
+
 
 app.UseAuthentication();
 
