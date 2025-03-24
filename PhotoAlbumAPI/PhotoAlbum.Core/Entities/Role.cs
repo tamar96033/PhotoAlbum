@@ -12,9 +12,9 @@ namespace PhotoAlbum.Core.Entities
         [Key]
         public int Id { get; set; }
         [StringLength(50)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         [StringLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

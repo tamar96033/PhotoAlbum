@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PhotoAlbum.Core.Entities;
 using PhotoAlbum.Core.IRepositories;
