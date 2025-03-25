@@ -34,5 +34,9 @@ namespace PhotoAlbum.Core.Entities
             UserId = user.Id;
             RoleId = role.Id;
         }
+        public UserRole()
+        {
+            
+        }
     }
 }

@@ -1,3 +1,4 @@
+using Amazon;
 using Amazon.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +18,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonS3>();
 
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+{
+    var configuration = builder.Configuration;
+
+    var awsAccessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
+    var awsSecretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+    var region = configuration["AWS:Region"] ?? "us-east-1"; // ברירת מחדל אם לא נמצא
+
+    return new AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.GetBySystemName(region));
+});
 
 // Add services to the container.
 
@@ -60,6 +71,7 @@ builder.Services.AddScoped<IAlbumService, AlbumService>();
 builder.Services.AddScoped<IAlbumRepository, AlbumRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IPictureRepository, PictureRepository>();
