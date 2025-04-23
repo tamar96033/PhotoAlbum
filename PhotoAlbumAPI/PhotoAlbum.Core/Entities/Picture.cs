@@ -26,5 +26,12 @@ namespace PhotoAlbum.Core.Entities
 
         // Navigation property for the many-to-many relationship
         public virtual ICollection<PictureTag> PictureTags { get; set; } = new List<PictureTag>();
+
+        [Required]
+        public int UserId { get; set; }
+
+        [Required]
+        [ForeignKey("UserId")]
+        public User User { get; set; }
     }
 }

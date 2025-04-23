@@ -35,7 +35,7 @@ namespace PhotoAlbum.API.Controllers
             // Validate the user and generate the token
             var token = await _authService.GenerateJwtTokenAsync(user.Name, user.Password);
 
-            if (token == null)
+            if (token == null || token.Count() == 0)
             {
                 return Unauthorized(new { message = "Invalid username or password" });
             }

@@ -14,17 +14,40 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile("secret.json", optional: true, reloadOnChange: true) // Add secret.json
+    .AddEnvironmentVariables();
+
 //for the upload controller
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonS3>();
 
+//this code is for the cloud.......
+//builder.Services.AddSingleton<IAmazonS3>(sp =>
+//{
+//    var configuration = builder.Configuration;
+
+//    var awsAccessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
+//    var awsSecretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+//    var region = configuration["AWS:Region"] ?? "us-east-1"; // ברירת מחדל אם לא נמצא
+
+//    return new AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.GetBySystemName(region));
+//});
+//this is for the environment.
 builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
     var configuration = builder.Configuration;
 
-    var awsAccessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
-    var awsSecretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
-    var region = configuration["AWS:Region"] ?? "us-east-1"; // ברירת מחדל אם לא נמצא
+    var awsAccessKey = builder.Configuration["AWS:AccessKey"];
+    var awsSecretKey = builder.Configuration["AWS:SecretKey"];
+    // Read AWS credentials from secret.json
+    //var awsAccessKey = configuration["AWS:AccessKey"];
+    //var awsSecretKey = configuration["AWS:SecretKey"];
+    var region = configuration["AWS:Region"] ?? "us-east-1"; // Default region if not found
+
+    Console.WriteLine("the keys are:" + awsAccessKey + ", " + awsSecretKey);
 
     return new AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.GetBySystemName(region));
 });
@@ -138,7 +161,6 @@ builder.Services.AddCors(options =>
         if (builder.Environment.IsDevelopment())
         {
             origins = origins.Concat(new[] { "http://localhost:5173" }).ToArray();
-
         }
 
         policy.WithOrigins(origins)

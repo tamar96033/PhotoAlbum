@@ -12,11 +12,13 @@ namespace PhotoAlbum.API.Controllers
     {
         private readonly IAmazonS3 _s3Client;
         private readonly IS3Service _s3Service;
+        private readonly IConfiguration _configuration;
 
-        public UploadController(IAmazonS3 s3Client, IS3Service s3Service)
+        public UploadController(IAmazonS3 s3Client, IS3Service s3Service, IConfiguration configuration)
         {
             _s3Client = s3Client;
             _s3Service = s3Service;
+            _configuration = configuration;
         }
 
         [HttpGet("presigned-url")]
@@ -24,15 +26,21 @@ namespace PhotoAlbum.API.Controllers
         {
             var request = new GetPreSignedUrlRequest
             {
-                BucketName = "photo-album-2-pnoren",
+                BucketName = _configuration["AWS:BucketName"],
                 Key = fileName,
                 Verb = HttpVerb.PUT,
                 Expires = DateTime.UtcNow.AddMinutes(5),
                 ContentType = "image/jpeg" // או סוג הקובץ המתאים
             };
-
-            string url = _s3Client.GetPreSignedURL(request);
-            return Ok(new { url });
+            try
+            {
+                string url = _s3Client.GetPreSignedURL(request);
+                return Ok(new { url });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Failed to generate pre-signed URL.");
+            }
         }
 
         [HttpGet("files")]
