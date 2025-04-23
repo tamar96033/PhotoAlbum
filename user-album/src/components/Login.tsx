@@ -7,24 +7,23 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [name, setName] = useState('')
   const [password, setPassword] = useState('');
-  const [error] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null)
   const navigate = useNavigate();
-
-  useEffect(()=>{
-    
+  
+  useEffect(() => {
     if (token != null) {
       console.log(token);
       localStorage.setItem('token', token!)
       navigate("/");
 
     }
-  },[token, navigate])
+  }, [token, navigate])
 
-  const user = new LoginUserDto ()
+  const user = new LoginUserDto()
   user.name = name
-  user.password = password 
-  
+  user.password = password
+
   const response = useApiClient()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -34,15 +33,12 @@ const Login = () => {
       console.log('response', r);
 
       setToken(r.token)
-      console.log(r.token);
-      // console.log(token);
-      // localStorage.setItem('token', token!)
-
-    } catch (error) {
-      console.error('Login failed:', error);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+      console.error('Login failed:', err);
     }
-  };
-
+  }
 
   return (<>
     <Paper elevation={4} sx={{ p: 4, maxWidth: 400, mx: "auto" }}>
@@ -77,10 +73,6 @@ const Login = () => {
         </Stack>
       </form>
     </Paper>
-    {/* {token != null &&
-      <div>you are in</div>
-      
-    } */}
   </>);
 }
 export default Login

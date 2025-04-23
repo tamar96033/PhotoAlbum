@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { RegisterUserDto } from "../api/client"
 // import { useApiClient } from "../contexts/ApiClientContext";
-import { Stack, TextField, Button, Paper } from "@mui/material";
+import { Stack, TextField, Button, Paper, Typography } from "@mui/material";
 import { useApiClient } from "../contexts/ApiClientContext";
 import { useNavigate } from "react-router-dom";
 
@@ -12,19 +12,20 @@ const Register = () => {
     const [roleName, setRoleName] = useState<string>('');
     const [token, setToken] = useState<string | null>(null)
     const navigate = useNavigate();
-    
+    const [error, setError] = useState<string | null>(null);
+
     const apiClient = useApiClient()
 
-  useEffect(()=>{
-    
-    if (token != null) {
-      console.log(token);
-      localStorage.setItem('token', token!)
-      navigate("/");
+    useEffect(() => {
 
-    }
-  },[token, navigate])
-  
+        if (token != null) {
+            console.log(token);
+            localStorage.setItem('token', token!)
+            navigate("/");
+
+        }
+    }, [token, navigate])
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
@@ -37,12 +38,13 @@ const Register = () => {
 
         try {
             const response = await apiClient.register(userDto)
-            
+
             console.log('response.token', response.token);
             setToken(response.token)
         }
-        catch (error: any) {
-            console.log(error.message);
+        catch (err: any) {
+            setError(err.message);
+            console.error('register failed:', err);
         }
 
     }
@@ -68,7 +70,7 @@ const Register = () => {
                         fullWidth
                     />
                     <TextField
-                        label="Password"    
+                        label="Password"
                         type="password"
                         variant="outlined"
                         value={password}
@@ -86,6 +88,11 @@ const Register = () => {
                     <Button type="submit" variant="contained" fullWidth>
                         Register
                     </Button>
+                    {error && (
+                        <Typography color="error" variant="body2">
+                            {error}
+                        </Typography>
+                    )}
                 </Stack>
             </form>
         </Paper>
