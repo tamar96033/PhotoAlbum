@@ -67,6 +67,14 @@ namespace PhotoAlbum.Data
                     Description = "Viewer role",
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
+                },
+                new Role
+                {
+                    Id = 4,
+                    Name = "User",
+                    Description = "user role",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 }
             );
         }

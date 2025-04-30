@@ -40,17 +40,51 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
     var configuration = builder.Configuration;
 
-    var awsAccessKey = builder.Configuration["AWS:AccessKey"];
-    var awsSecretKey = builder.Configuration["AWS:SecretKey"];
-    // Read AWS credentials from secret.json
-    //var awsAccessKey = configuration["AWS:AccessKey"];
-    //var awsSecretKey = configuration["AWS:SecretKey"];
+    var awsAccessKey = configuration["AWS:AWS_ACCESS_KEY_ID"];
+    var awsSecretKey = configuration["AWS:AWS_SECRET_ACCESS_KEY"];
     var region = configuration["AWS:Region"] ?? "us-east-1"; // Default region if not found
 
     Console.WriteLine("the keys are:" + awsAccessKey + ", " + awsSecretKey);
 
-    return new AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.GetBySystemName(region));
+    try
+    {
+        var s3Client = new AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.GetBySystemName(region));
+
+        // Attempt to list S3 buckets to verify connection
+        var response = s3Client.ListBucketsAsync().Result;
+
+        if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Console.WriteLine("Connection successful!");
+        }
+        else
+        {
+            Console.WriteLine("Failed to connect to S3. Status code: " + response.HttpStatusCode);
+        }
+
+        return s3Client;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Error connecting to AWS: " + ex.Message);
+        throw; // rethrow the exception after logging
+    }
 });
+//builder.Services.AddSingleton<IAmazonS3>(sp =>
+//{
+//    var configuration = builder.Configuration;
+
+//    var awsAccessKey = builder.Configuration["AWS:AWS_ACCESS_KEY_ID"];
+//    var awsSecretKey = builder.Configuration["AWS:AWS_SECRET_ACCESS_KEY"];
+//    // Read AWS credentials from secret.json
+//    //var awsAccessKey = configuration["AWS:AccessKey"];
+//    //var awsSecretKey = configuration["AWS:SecretKey"];
+//    var region = configuration["AWS:Region"] ?? "us-east-1"; // Default region if not found
+
+//    Console.WriteLine("the keys are:" + awsAccessKey + ", " + awsSecretKey);
+
+//    return new AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.GetBySystemName(region));
+//});
 
 // Add services to the container.
 
@@ -206,5 +240,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseDeveloperExceptionPage();
 
 app.Run();

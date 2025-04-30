@@ -40,35 +40,35 @@ namespace PhotoAlbum.Service.Services
             var pictureDto = _mapper.Map<PictureDto>(picture);
 
             // Now populate the tags
-            pictureDto.Tags = picture.PictureTags?.Select(pt => pt.Tag.Name ?? "").ToList() ?? new List<string>();
+            //pictureDto.Tags = picture.PictureTags?.Select(pt => pt.Tag.Name ?? "").ToList() ?? new List<string>();
 
             return pictureDto;
         }
         public async Task AddPictureAsync(string name, List<string> tagNames)
         {
-            var picture = new Picture
-            {
-                Name = name,
-                PictureTags = new List<PictureTag>()
-            };
+            //var picture = new Picture
+            //{
+            //    Name = name,
+            //    PictureTags = new List<PictureTag>()
+            //};
 
-            foreach (var tagName in tagNames)
-            {
-                var tag = await _tagRepository.GetTagByNameAsync(tagName);
-                if (tag == null)
-                {
-                    tag = _tagRepository.AddTag(new Tag { Name = tagName });
-                }
+            //foreach (var tagName in tagNames)
+            //{
+            //    var tag = await _tagRepository.GetTagByNameAsync(tagName);
+            //    if (tag == null)
+            //    {
+            //        tag = _tagRepository.AddTag(new Tag { Name = tagName });
+            //    }
 
-                picture.PictureTags.Add(new PictureTag
-                {
-                    TagId = tag.Id,
-                    Tag = tag
-                });
-            }
+            //    picture.PictureTags.Add(new PictureTag
+            //    {
+            //        TagId = tag.Id,
+            //        Tag = tag
+            //    });
+            //}
 
-            _pictureRepository.AddPicture(picture);
-            await _repositoryManager.SaveAsync();
+            //_pictureRepository.AddPicture(picture);
+            //await _repositoryManager.SaveAsync();
         }
 
         public async Task<bool> DeletePictureAsync(int id)
@@ -95,8 +95,8 @@ namespace PhotoAlbum.Service.Services
             }
 
             // Prevent duplicate PictureTag
-            if (picture.PictureTags.Any(pt => pt.TagId == tag.Id))
-                return true; // Tag already associated
+            //if (picture.PictureTags.Any(pt => pt.TagId == tag.Id))
+                //return true; // Tag already associated
 
             var pictureTag = new PictureTag
             {

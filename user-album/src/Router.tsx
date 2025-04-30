@@ -1,8 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
-import Pictures from "./components/Pictures";
+import Pictures from "./components/galery/Pictures";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
+import AlbumsPage from "./pages/AlbumsPage";
+import TagsPage from "./pages/TagsPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const router = createBrowserRouter([
     {
@@ -11,7 +14,10 @@ const router = createBrowserRouter([
         children:[
             {path: '', element: <HomePage/>},
             {path:'login', element: <LoginPage/>},
-            {path: 'pictures', element: <Pictures/>}
+            {path: 'pictures', element: <Pictures/>},
+            {path: 'albums', element: <AlbumsPage/>},
+            {path: 'tags', element: <TagsPage/>},
+            {path: '*', element: <NotFoundPage/>}
         ]
     }
 ])

@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
-import { Picture } from "../api/client"
-import { useApiClient } from "../contexts/ApiClientContext";
+import { Picture } from "../../api/client"
+import { useApiClient } from "../../contexts/ApiClientContext";
+import UploadToS3 from "../UploadToS3";
+import DeleteImage from "../DeleteImage";
+import ShowPicture from "./ShowPicture";
 
 const Pictures = () => {
     // const API_BASE_URL = import.meta.env.VITE_REACT_APP_API_URL;
@@ -15,9 +18,9 @@ const Pictures = () => {
 
             try {
                 // const result = await apiClient.pictureAll()
-                const token = "Bearer "+ localStorage.getItem('token')
+                const token = "Bearer " + localStorage.getItem('token')
                 console.log(token);
-                
+
                 const result = await apiClient.pictureAll(token!)
                 // const result = await apiClient.pictureAll(undefined)
                 // console.log('func',apiClient.pictureGET);
@@ -32,25 +35,13 @@ const Pictures = () => {
         fetchData()
 
     }, [])
+
+    const handle = () =>{
+        console.log('pctures', pictures);
+    }
     return (<>
-        <div>
-            <h1>Pictures</h1>
-            <div>
-                {pictures && pictures.length > 0 ? (
-                    pictures.map((picture) => (
-                        <div key={picture.id}>
-                            {/* <img src={picture.url} alt={picture.name} /> */}
-                            <p>{picture.name}</p>
-                            {/* {picture.pictureTags?.map((tag)=>(
-                                <div>tag - {tag.id}</div>
-                            ))} */}
-                        </div>
-                    ))
-                ) : (
-                    <p>No pictures available.</p>
-                )}
-            </div>
-        </div>
+        <ShowPicture />
+<button onClick={handle}>sdfadf</button>
     </>)
 }
 export default Pictures

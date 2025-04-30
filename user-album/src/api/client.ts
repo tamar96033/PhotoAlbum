@@ -142,11 +142,18 @@ export interface IApiClient {
     tagDELETE(id: number, authorization: string | undefined): Promise<void>;
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @param file (optional) 
+     * @return OK
+     */
+    uploadFile(authorization: string | undefined, file: FileParameter | undefined): Promise<void>;
+
+    /**
      * @param fileName (optional) 
      * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
-    presignedUrl(fileName: string | undefined, authorization: string | undefined): Promise<void>;
+    uploadUrl(fileName: string | undefined, authorization: string | undefined): Promise<any>;
 }
 
 export class ApiClient implements IApiClient {
@@ -1220,31 +1227,34 @@ export class ApiClient implements IApiClient {
     }
 
     /**
-     * @param fileName (optional) 
      * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @param file (optional) 
      * @return OK
      */
-    presignedUrl(fileName: string | undefined, authorization: string | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/presigned-url?";
-        if (fileName === null)
-            throw new Error("The parameter 'fileName' cannot be null.");
-        else if (fileName !== undefined)
-            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+    uploadFile(authorization: string | undefined, file: FileParameter | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/Upload/upload-file";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+
         let options_: RequestInit = {
-            method: "GET",
+            body: content_,
+            method: "POST",
             headers: {
                 "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPresignedUrl(_response);
+            return this.processUploadFile(_response);
         });
     }
 
-    protected processPresignedUrl(response: Response): Promise<void> {
+    protected processUploadFile(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1257,6 +1267,67 @@ export class ApiClient implements IApiClient {
             });
         }
         return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param fileName (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    uploadUrl(fileName: string | undefined, authorization: string | undefined): Promise<any> {
+        let url_ = this.baseUrl + "/api/Upload/upload-url?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUploadUrl(_response);
+        });
+    }
+
+    protected processUploadUrl(response: Response): Promise<any> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result401 = resultData401 !== undefined ? resultData401 : <any>null;
+    
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result400 = resultData400 !== undefined ? resultData400 : <any>null;
+    
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<any>(null as any);
     }
 }
 
@@ -1406,6 +1477,8 @@ export class Picture implements IPicture {
     createdAt?: Date;
     updatedAt?: Date;
     pictureTags?: PictureTag[] | undefined;
+    userId!: number;
+    user!: User;
 
     constructor(data?: IPicture) {
         if (data) {
@@ -1413,6 +1486,9 @@ export class Picture implements IPicture {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.user = new User();
         }
     }
 
@@ -1427,6 +1503,8 @@ export class Picture implements IPicture {
                 for (let item of _data["pictureTags"])
                     this.pictureTags!.push(PictureTag.fromJS(item));
             }
+            this.userId = _data["userId"];
+            this.user = _data["user"] ? User.fromJS(_data["user"]) : new User();
         }
     }
 
@@ -1448,6 +1526,8 @@ export class Picture implements IPicture {
             for (let item of this.pictureTags)
                 data["pictureTags"].push(item.toJSON());
         }
+        data["userId"] = this.userId;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -1458,6 +1538,8 @@ export interface IPicture {
     createdAt?: Date;
     updatedAt?: Date;
     pictureTags?: PictureTag[] | undefined;
+    userId: number;
+    user: User;
 }
 
 export class PictureDto implements IPictureDto {
@@ -1774,6 +1856,67 @@ export class TagDto implements ITagDto {
 export interface ITagDto {
     id?: number;
     name?: string | undefined;
+}
+
+export class User implements IUser {
+    id?: number;
+    name?: string | undefined;
+    email?: string | undefined;
+    password?: string | undefined;
+    createdAt?: Date;
+    updatedAt?: Date;
+
+    constructor(data?: IUser) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.email = _data["email"];
+            this.password = _data["password"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): User {
+        data = typeof data === 'object' ? data : {};
+        let result = new User();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["email"] = this.email;
+        data["password"] = this.password;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IUser {
+    id?: number;
+    name?: string | undefined;
+    email?: string | undefined;
+    password?: string | undefined;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface FileParameter {
+    data: any;
+    fileName: string;
 }
 
 export class SwaggerException extends Error {

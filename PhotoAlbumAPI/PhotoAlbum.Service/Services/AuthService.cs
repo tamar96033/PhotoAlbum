@@ -26,16 +26,15 @@ namespace PhotoAlbum.Service.Services
             _userRepository = userRepository;
             _repositoryManager = repositoryManager;
         }
-
+       
         public async Task<string> GenerateJwtTokenAsync(string username, string password)
         {
             var user = await _userRepository.GetUserByNameAsync(username);
-            if (user == null || user.Password != password) // Ensure password check
+            if (user == null || user.Password != password)
             {
                 return ""; // Invalid user or password
             }
 
-            // Get the roles associated with the user
             var roles = await _userRepository.GetRolesByUserIdAsync(user.Id);
             if (roles == null || !roles.Any())
             {
@@ -44,18 +43,17 @@ namespace PhotoAlbum.Service.Services
 
             var roleNames = roles.Select(r => r.Name).ToArray();
 
-            // Add claims for roles
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Name ?? "Unknown")
-        };
+    {
+        new Claim(ClaimTypes.Name, user.Name ?? "Unknown"),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // ✅ Add the user ID here
+    };
 
             foreach (var role in roleNames)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role ?? "Unknown"));
             }
 
-            // Generate JWT token
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
@@ -65,10 +63,54 @@ namespace PhotoAlbum.Service.Services
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: credentials
             );
-            var result = new JwtSecurityTokenHandler().WriteToken(token); 
+
+            var result = new JwtSecurityTokenHandler().WriteToken(token);
             await _repositoryManager.SaveAsync();
             return result;
         }
+
+        //public async Task<string> GenerateJwtTokenAsync(string username, string password)
+        //{
+        //    var user = await _userRepository.GetUserByNameAsync(username);
+        //    if (user == null || user.Password != password) // Ensure password check
+        //    {
+        //        return ""; // Invalid user or password
+        //    }
+
+        //    // Get the roles associated with the user
+        //    var roles = await _userRepository.GetRolesByUserIdAsync(user.Id);
+        //    if (roles == null || !roles.Any())
+        //    {
+        //        return ""; // No roles found
+        //    }
+
+        //    var roleNames = roles.Select(r => r.Name).ToArray();
+
+        //    // Add claims for roles
+        //    var claims = new List<Claim>
+        //{
+        //    new Claim(ClaimTypes.Name, user.Name ?? "Unknown")
+        //};
+
+        //    foreach (var role in roleNames)
+        //    {
+        //        claims.Add(new Claim(ClaimTypes.Role, role ?? "Unknown"));
+        //    }
+
+        //    // Generate JWT token
+        //    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+        //    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        //    var token = new JwtSecurityToken(
+        //        issuer: _configuration["Jwt:Issuer"],
+        //        audience: _configuration["Jwt:Audience"],
+        //        claims: claims,
+        //        expires: DateTime.Now.AddMinutes(30),
+        //        signingCredentials: credentials
+        //    );
+        //    var result = new JwtSecurityTokenHandler().WriteToken(token); 
+        //    await _repositoryManager.SaveAsync();
+        //    return result;
+        //}
 
 
         public async Task<bool> RegisterUserWithRoleAsync(RegisterUserDto dto)

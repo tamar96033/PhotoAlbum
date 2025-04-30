@@ -65,8 +65,15 @@ namespace PhotoAlbum.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllPictures()
         {
-            var pictures = await _pictureService.GetAllPicturesAsync();
-            return Ok(pictures);
+            try
+            {
+                var pictures = await _pictureService.GetAllPicturesAsync();
+                return Ok(pictures);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 

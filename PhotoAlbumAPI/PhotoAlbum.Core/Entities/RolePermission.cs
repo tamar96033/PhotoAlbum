@@ -11,6 +11,7 @@ namespace PhotoAlbum.Core.Entities
     public class RolePermission
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]   
         public int Id { get; set; }
 
         [Required]

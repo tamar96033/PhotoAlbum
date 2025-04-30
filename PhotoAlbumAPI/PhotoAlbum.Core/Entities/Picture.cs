@@ -18,6 +18,10 @@ namespace PhotoAlbum.Core.Entities
         [StringLength(100)]
         public required string Name { get; set; }
 
+        [Required]
+        [StringLength(100)]
+        public required string Url { get; set; }
+
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -25,7 +29,7 @@ namespace PhotoAlbum.Core.Entities
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation property for the many-to-many relationship
-        public virtual ICollection<PictureTag> PictureTags { get; set; } = new List<PictureTag>();
+        //public virtual ICollection<PictureTag> PictureTags { get; set; } = new List<PictureTag>();
 
         [Required]
         public int UserId { get; set; }
