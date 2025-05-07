@@ -1,47 +1,59 @@
 import { useEffect, useState } from "react"
 import { Picture } from "../../api/client"
 import { useApiClient } from "../../contexts/ApiClientContext";
-import UploadToS3 from "../UploadToS3";
-import DeleteImage from "../DeleteImage";
 import ShowPicture from "./ShowPicture";
 
-const Pictures = () => {
-    // const API_BASE_URL = import.meta.env.VITE_REACT_APP_API_URL;
-    // const apiClient = useContext(ApiClientContext);
-    const apiClient = useApiClient();
+const Pictures = ({urls}: {urls: string[]}) => {
+    // const apiClient = useApiClient();
 
-    const [pictures, setPictures] = useState<Picture[]>([])
-    useEffect(() => {
-        const fetchData = async () => {
-            // const apiClient = new ApiClient(API_BASE_URL);
-            console.log('apiClient', apiClient);
+    // const [pictures, setPictures] = useState<Picture[]>([])
+    // const token = "Bearer " + localStorage.getItem('token')
 
-            try {
-                // const result = await apiClient.pictureAll()
-                const token = "Bearer " + localStorage.getItem('token')
-                console.log(token);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         console.log('apiClient', apiClient);
 
-                const result = await apiClient.pictureAll(token!)
-                // const result = await apiClient.pictureAll(undefined)
-                // console.log('func',apiClient.pictureGET);
-                console.log('result', result);
+    //         try {
 
-                setPictures(result);
-                console.log('pictures', pictures);
-            } catch (error: any) {
-                console.log('there is an error', error!.message);
-            }
-        };
-        fetchData()
+    //             const result = await  apiClient.currentUser(token)
+    //             console.log(result);
 
-    }, [])
+    //             setPictures(result);
+    //             console.log('pictures', pictures);
+    //         } catch (error: any) {
+    //             console.log('there is an error', error!.message);
+    //         }
+    //     };
+    //     fetchData()
 
-    const handle = () =>{
-        console.log('pctures', pictures);
-    }
+    // }, [])
+
+    // const handle = async () => {
+    //     const result = await apiClient.pictureAll(token!)
+    //     setPictures(result)
+    //     console.log('pictures', pictures);
+    // }
+
+    // useEffect(() => {
+    //     console.log('pictures', pictures);
+
+    // }, [pictures])
+
     return (<>
-        <ShowPicture />
-<button onClick={handle}>sdfadf</button>
+        <div
+            style={{
+                columnCount: 3,
+                columnGap: '16px',
+                padding: '20px',
+            }}
+        >
+            {/* {pictures.map((p, idx) => (
+                <ShowPicture key={idx} url={p.url} />
+            ))} */}
+            {urls?.map((url, index)=>
+            <ShowPicture key={index} url={url}/>)}
+        </div>
+        {/* <button onClick={handle}>print all pictures</button> */}
     </>)
 }
 export default Pictures

@@ -1,0 +1,62 @@
+.container {
+    display: flex;
+    height: 100vh; /* תופס את כל גובה הדף */
+}
+
+/* Sidebar styles */
+.sidebar {
+    /* width: 250px; רוחב הסיידבר */
+    background-color: #f4f4f4; /* צבע רקע לסיידבר */
+    padding: 20px;
+    border-right: 1px solid #ddd; /* גבול דק בין הסיידבר לתוכן */
+    height: 100vh; /* תופס את כל גובה הדף */
+    overflow-y: auto; /* אפשר לגלול אם התוכן עולה על גובה הסיידבר */
+}
+
+/* Content area (where pictures are shown) */
+.content {
+    flex-grow: 1; /* תופס את כל המקום שנשאר */
+    padding: 20px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center; /* ממקם את התוכן במרכז */
+    align-items: center; /* ממקם את התוכן במרכז בצורה אנכית */
+    overflow-y: auto;
+}
+
+/* Styling for buttons in sidebar */
+button {
+    width: 100%; /* כפתור תופס את כל רוחב הסיידבר */
+    padding: 10px;
+    background-color: #007bff; /* צבע רקע לכפתור */
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 16px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3; /* צבע רקע כהה יותר בהעברת העכבר */
+}
+
+/* Grid for pictures */
+.picture-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* פריסה רספונסיבית */
+    gap: 15px;
+    padding: 10px;
+    max-width: 1200px; /* מגבלה של רוחב מקסימלי לתמונות */
+    width: 100%; /* תופס את כל הרוחב */
+}
+
+/* Individual picture item */
+.picture-item img {
+    width: 100%; /* רוחב התמונות יתפוס את כל תא הגריד */
+    height: auto;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}

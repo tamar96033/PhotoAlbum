@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import AlbumsPage from "./pages/AlbumsPage";
 import TagsPage from "./pages/TagsPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import GaleryPage from "./pages/GaleryPage";
 
 const router = createBrowserRouter([
     {
@@ -14,7 +15,7 @@ const router = createBrowserRouter([
         children:[
             {path: '', element: <HomePage/>},
             {path:'login', element: <LoginPage/>},
-            {path: 'pictures', element: <Pictures/>},
+            {path: 'pictures', element: <GaleryPage/>},
             {path: 'albums', element: <AlbumsPage/>},
             {path: 'tags', element: <TagsPage/>},
             {path: '*', element: <NotFoundPage/>}
