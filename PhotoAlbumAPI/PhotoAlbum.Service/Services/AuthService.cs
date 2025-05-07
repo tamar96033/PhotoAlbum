@@ -26,7 +26,48 @@ namespace PhotoAlbum.Service.Services
             _userRepository = userRepository;
             _repositoryManager = repositoryManager;
         }
-       
+
+        //    public async Task<string> GenerateJwtTokenAsync(string username, string password, string role)
+        //    {
+        //        var user = await _userRepository.GetUserByNameAsync(username);
+        //        if (user == null || user.Password != password)
+        //        {
+        //            return ""; // Invalid user or password
+        //        }
+
+        //        var roles = await _userRepository.GetRolesByUserIdAsync(user.Id);
+        //        if (roles == null || !roles.Any())
+        //        {
+        //            return ""; // No roles found
+        //        }
+
+        //        var roleNames = roles.Select(r => r.Name).ToArray();
+
+        //        var claims = new List<Claim>
+        //{
+        //    new Claim(ClaimTypes.Name, user.Name ?? "Unknown"),
+        //    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // ✅ Add the user ID here
+        //};
+
+        //        foreach (var role in roleNames)
+        //        {
+        //            claims.Add(new Claim(ClaimTypes.Role, role ?? "Unknown"));
+        //        }
+
+        //        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+        //        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        //        var token = new JwtSecurityToken(
+        //            issuer: _configuration["Jwt:Issuer"],
+        //            audience: _configuration["Jwt:Audience"],
+        //            claims: claims,
+        //            expires: DateTime.Now.AddMinutes(30),
+        //            signingCredentials: credentials
+        //        );
+
+        //        var result = new JwtSecurityTokenHandler().WriteToken(token);
+        //        await _repositoryManager.SaveAsync();
+        //        return result;
+        //    }
         public async Task<string> GenerateJwtTokenAsync(string username, string password)
         {
             var user = await _userRepository.GetUserByNameAsync(username);
@@ -35,27 +76,34 @@ namespace PhotoAlbum.Service.Services
                 return ""; // Invalid user or password
             }
 
+            // Get roles for the user
             var roles = await _userRepository.GetRolesByUserIdAsync(user.Id);
             if (roles == null || !roles.Any())
             {
                 return ""; // No roles found
             }
 
+            // Extract role names
             var roleNames = roles.Select(r => r.Name).ToArray();
 
+            // Create claims, including user ID and roles
             var claims = new List<Claim>
     {
         new Claim(ClaimTypes.Name, user.Name ?? "Unknown"),
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // ✅ Add the user ID here
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // Add the user ID here
     };
 
+            // Add roles to claims
             foreach (var role in roleNames)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role ?? "Unknown"));
             }
 
+            // Create security key for signing the JWT
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            // Create the JWT token
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
@@ -64,11 +112,14 @@ namespace PhotoAlbum.Service.Services
                 signingCredentials: credentials
             );
 
+            // Return the token as a string
             var result = new JwtSecurityTokenHandler().WriteToken(token);
+
+            // Optionally save to repository (if required by your business logic)
             await _repositoryManager.SaveAsync();
+
             return result;
         }
-
         //public async Task<string> GenerateJwtTokenAsync(string username, string password)
         //{
         //    var user = await _userRepository.GetUserByNameAsync(username);
@@ -113,24 +164,44 @@ namespace PhotoAlbum.Service.Services
         //}
 
 
+        //public async Task<bool> RegisterUserWithRoleAsync(RegisterUserDto dto)
+        //{
+        //    // Create a new user entity from the DTO.
+        //    var user = new User
+        //    {
+        //        Name = dto.Name,
+        //        Email = dto.Email,
+        //        Password = dto.Password, // NOTE: In production, you should hash the password!
+        //        CreatedAt = DateTime.UtcNow,
+        //        UpdatedAt = DateTime.UtcNow
+        //    };
+        //    // Call the repository method to add the user and assign the role.
+        //    if(dto.RoleName == null)
+        //        return false;
+
+        //    var result = await _userRepository.RegisterUserWithRoleAsync(user, dto.RoleName);
+        //    await _repositoryManager.SaveAsync();
+        //    return result;
+        //}
         public async Task<bool> RegisterUserWithRoleAsync(RegisterUserDto dto)
         {
-            // Create a new user entity from the DTO.
             var user = new User
             {
                 Name = dto.Name,
                 Email = dto.Email,
-                Password = dto.Password, // NOTE: In production, you should hash the password!
+                Password = dto.Password, // 🔒 hash it in production!
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            // Call the repository method to add the user and assign the role.
-            if(dto.RoleName == null)
+
+            // Ensure role is not null
+            if (string.IsNullOrWhiteSpace(dto.RoleName))
                 return false;
 
             var result = await _userRepository.RegisterUserWithRoleAsync(user, dto.RoleName);
             await _repositoryManager.SaveAsync();
             return result;
         }
+
     }
 }

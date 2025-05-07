@@ -11,7 +11,7 @@ namespace PhotoAlbum.Core.IServices
     public interface IPictureService
     {
         Task<PictureDto> GetPictureByIdAsync(int id);
-        Task AddPictureAsync(string name, List<string> tagNames);
+        Task AddPictureAsync(PictureDto pictureDto);
         Task<bool> DeletePictureAsync(int id);
         Task<bool> AddTagToPictureAsync(int pictureId, string tagName);
         Task<IEnumerable<PictureDto>> GetAllPicturesAsync();
@@ -22,5 +22,7 @@ namespace PhotoAlbum.Core.IServices
         Task<IEnumerable<PictureDto>> GetPicturesByTagAsync(string tagName);
         Task<bool> UpdatePictureAsync(int id, PictureDto updateDto);
         Task<bool> RemoveTagFromPictureAsync(int pictureId, string tagName);
+        Task<IEnumerable<PictureDto>> GetPicturesByUserIdAsync(int userId);
+        Task<IEnumerable<PictureDto>> GetPicturesByTagAndUserIdAsync(int tagId, int userId);
     }
 }

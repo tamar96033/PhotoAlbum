@@ -13,13 +13,13 @@ namespace PhotoAlbum.Service
     {
         public MappingProfile()
         {
-            //CreateMap<Picture, PictureDto>()
-                //.ForMember(dest => dest.Tags, opt =>
-                    //opt.MapFrom(src => src.PictureTags != null
-                        //? src.PictureTags.Select(pt => pt.Tag.Name ?? "").ToList()
-                        //: new List<string>()));
+            CreateMap<Picture, PictureDto>()
+                .ForMember(dest => dest.Tags, opt =>
+                    opt.MapFrom(src => src.PictureTags != null
+                        ? src.PictureTags.Select(pt => pt.Tag.Name ?? "").ToList()
+                        : new List<string>()));
 
-            //CreateMap<Tag, TagDto>().ReverseMap();
+            CreateMap<Tag, TagDto>().ReverseMap();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using PhotoAlbum.Core.Entities;
+﻿using PhotoAlbum.Core.Dto;
+using PhotoAlbum.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,5 +27,7 @@ namespace PhotoAlbum.Core.IRepositories
         void UpdatePicture(Picture picture);
         Task UpdatePictureTagsAsync(int pictureId, List<string> tagNames);
         Task<bool> RemoveTagFromPictureAsync(int pictureId, string tagName);
+        Task<IEnumerable<Picture>> GetPicturesByUserIdAsync(int userId);
+        Task<IEnumerable<PictureDto>> GetPicturesByTagAndUserIdAsync(int tagId, int userId);
     }
 }

@@ -17,9 +17,9 @@ namespace PhotoAlbum.Data.Repositories
             _context = context;
         }
 
-        public async Task<Tag> GetTagByNameAsync(string name)
+        public async Task<Tag?> GetTagByNameAsync(string name)
         {
-            return await _context.Tags.FirstOrDefaultAsync(t => t.Name == name) ?? new Tag();
+            return await _context.Tags.FirstOrDefaultAsync(t => t.Name == name);
         }
 
         public Tag AddTag(Tag tag)

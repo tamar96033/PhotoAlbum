@@ -16,7 +16,7 @@ namespace PhotoAlbum.Service.Services
         private readonly IPictureRepository _pictureRepository;
         private readonly IRepositoryManager _repositoryManager;
         private readonly ITagRepository _tagRepository;
-        private readonly IMapper _mapper; 
+        private readonly IMapper _mapper;
 
         public PictureService(IPictureRepository pictureRepository, IRepositoryManager repositoryManager, ITagRepository tagRepository, IMapper mapper)
         {
@@ -40,19 +40,26 @@ namespace PhotoAlbum.Service.Services
             var pictureDto = _mapper.Map<PictureDto>(picture);
 
             // Now populate the tags
-            //pictureDto.Tags = picture.PictureTags?.Select(pt => pt.Tag.Name ?? "").ToList() ?? new List<string>();
+            pictureDto.Tags = picture.PictureTags?.Select(pt => pt.Tag.Name ?? "").ToList() ?? new List<string>();
 
             return pictureDto;
         }
-        public async Task AddPictureAsync(string name, List<string> tagNames)
-        {
-            //var picture = new Picture
-            //{
-            //    Name = name,
-            //    PictureTags = new List<PictureTag>()
-            //};
 
-            //foreach (var tagName in tagNames)
+
+        //public async Task AddPictureAsync(string name, List<string> tagNames)
+        public async Task AddPictureAsync(PictureDto pictureDto)
+        {
+            var picture = new Picture
+            {
+                Name = pictureDto.Name,
+                Url = pictureDto.Url,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                UserId = pictureDto.UserId,
+                PictureTags = new List<PictureTag>()
+            };
+
+            //foreach (var tagName in pictureDto.Tags)
             //{
             //    var tag = await _tagRepository.GetTagByNameAsync(tagName);
             //    if (tag == null)
@@ -67,8 +74,25 @@ namespace PhotoAlbum.Service.Services
             //    });
             //}
 
-            //_pictureRepository.AddPicture(picture);
-            //await _repositoryManager.SaveAsync();
+            foreach (var tagName in pictureDto.Tags)
+            {
+                if (string.IsNullOrWhiteSpace(tagName)) continue;
+
+                var tag = await _tagRepository.GetTagByNameAsync(tagName);
+                if (tag == null)
+                {
+                    tag = _tagRepository.AddTag(new Tag { Name = tagName });
+                }
+
+                picture.PictureTags.Add(new PictureTag
+                {
+                    TagId = tag.Id,
+                    Tag = tag
+                });
+            }
+
+            _pictureRepository.AddPicture(picture);
+            await _repositoryManager.SaveAsync();
         }
 
         public async Task<bool> DeletePictureAsync(int id)
@@ -96,7 +120,7 @@ namespace PhotoAlbum.Service.Services
 
             // Prevent duplicate PictureTag
             //if (picture.PictureTags.Any(pt => pt.TagId == tag.Id))
-                //return true; // Tag already associated
+            //return true; // Tag already associated
 
             var pictureTag = new PictureTag
             {
@@ -142,12 +166,32 @@ namespace PhotoAlbum.Service.Services
             await _repositoryManager.SaveAsync();
             return true;
         }
-        
+
         public async Task<bool> RemoveTagFromPictureAsync(int pictureId, string tagName)
         {
             var result = await _pictureRepository.RemoveTagFromPictureAsync(pictureId, tagName);
             await _repositoryManager.SaveAsync();
             return result;
+        }
+
+        public async Task<IEnumerable<PictureDto>> GetPicturesByUserIdAsync(int userId)
+        {
+            var pictures = await _pictureRepository.GetPicturesByUserIdAsync(userId);
+            return _mapper.Map<IEnumerable<PictureDto>>(pictures);
+        }
+
+        public async Task<IEnumerable<PictureDto>> GetPicturesByTagAndUserIdAsync(int tagId, int userId)
+        {
+            //the first trying
+            return await _pictureRepository.GetPicturesByTagAndUserIdAsync(tagId, userId);
+
+            //second
+       //     return await _context.Pictures
+       //.Where(p => p.UserId == userId)
+       //.Where(p => p.PictureTags.Any(pt => pt.TagId == tagId)) // Filter by tagId
+       //.Include(p => p.PictureTags) // Eager load the picture tags
+       //.ThenInclude(pt => pt.Tag)  // Optionally include the actual tag object if needed
+       //.ToListAsync();
         }
     }
 }

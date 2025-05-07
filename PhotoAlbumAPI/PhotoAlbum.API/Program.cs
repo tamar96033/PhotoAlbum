@@ -36,40 +36,76 @@ builder.Services.AddAWSService<IAmazonS3>();
 //    return new AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.GetBySystemName(region));
 //});
 //this is for the environment.
+
+
 builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
     var configuration = builder.Configuration;
 
     var awsAccessKey = configuration["AWS:AWS_ACCESS_KEY_ID"];
     var awsSecretKey = configuration["AWS:AWS_SECRET_ACCESS_KEY"];
-    var region = configuration["AWS:Region"] ?? "us-east-1"; // Default region if not found
+    var region = configuration["AWS:Region"] ?? "us-east-1";
 
-    Console.WriteLine("the keys are:" + awsAccessKey + ", " + awsSecretKey);
+    var config = new AmazonS3Config
+    {
+        RegionEndpoint = RegionEndpoint.GetBySystemName(region),
+        ForcePathStyle = true // Ensures URL is like s3.{region}.amazonaws.com/bucket-name/key
+    };
 
     try
     {
-        var s3Client = new AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.GetBySystemName(region));
+        var s3Client = new AmazonS3Client(awsAccessKey, awsSecretKey, config);
 
-        // Attempt to list S3 buckets to verify connection
+        // Optional: test connection
         var response = s3Client.ListBucketsAsync().Result;
-
-        if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("Connection successful!");
-        }
-        else
-        {
-            Console.WriteLine("Failed to connect to S3. Status code: " + response.HttpStatusCode);
-        }
+        Console.WriteLine(response.HttpStatusCode == System.Net.HttpStatusCode.OK
+            ? "Connection successful!"
+            : $"Failed to connect to S3. Status code: {response.HttpStatusCode}");
 
         return s3Client;
     }
     catch (Exception ex)
     {
         Console.WriteLine("Error connecting to AWS: " + ex.Message);
-        throw; // rethrow the exception after logging
+        throw;
     }
 });
+
+
+//builder.Services.AddSingleton<IAmazonS3>(sp =>
+//{
+//    var configuration = builder.Configuration;
+
+//    var awsAccessKey = configuration["AWS:AWS_ACCESS_KEY_ID"];
+//    var awsSecretKey = configuration["AWS:AWS_SECRET_ACCESS_KEY"];
+//    var region = configuration["AWS:Region"] ?? "us-east-1"; // Default region if not found
+
+//    Console.WriteLine("the keys are:" + awsAccessKey + ", " + awsSecretKey);
+
+//    try
+//    {
+//        var s3Client = new AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.GetBySystemName(region));
+
+//        // Attempt to list S3 buckets to verify connection
+//        var response = s3Client.ListBucketsAsync().Result;
+
+//        if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+//        {
+//            Console.WriteLine("Connection successful!");
+//        }
+//        else
+//        {
+//            Console.WriteLine("Failed to connect to S3. Status code: " + response.HttpStatusCode);
+//        }
+
+//        return s3Client;
+//    }
+//    catch (Exception ex)
+//    {
+//        Console.WriteLine("Error connecting to AWS: " + ex.Message);
+//        throw; // rethrow the exception after logging
+//    }
+//});
 //builder.Services.AddSingleton<IAmazonS3>(sp =>
 //{
 //    var configuration = builder.Configuration;
@@ -89,6 +125,7 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
@@ -126,10 +163,10 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<IAlbumService, AlbumService>();
 builder.Services.AddScoped<IAlbumRepository, AlbumRepository>();
-
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IPictureRepository, PictureRepository>();
 builder.Services.AddScoped<IPictureService, PictureService>();
@@ -167,8 +204,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("EditorOrAdmin", policy => policy.RequireRole("Editor", "Admin"));
-    options.AddPolicy("ViewerOnly", policy => policy.RequireRole("Viewer"));
+    options.AddPolicy("AdminOrUser", policy => policy.RequireRole("User", "Admin"));
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
 });
 
 
@@ -194,7 +231,7 @@ builder.Services.AddCors(options =>
         // Add localhost only in development
         if (builder.Environment.IsDevelopment())
         {
-            origins = origins.Concat(new[] { "http://localhost:5173" }).ToArray();
+            origins = origins.Concat(new[] { "http://localhost:5173", "http://localhost:4200" }).ToArray();
         }
 
         policy.WithOrigins(origins)

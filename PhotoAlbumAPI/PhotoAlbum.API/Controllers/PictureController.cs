@@ -6,6 +6,7 @@ using PhotoAlbum.API.Dto;
 using PhotoAlbum.Core.Dto;
 using PhotoAlbum.Core.Entities;
 using PhotoAlbum.Core.IServices;
+using System.Security.Claims;
 
 namespace PhotoAlbum.API.Controllers
 {
@@ -25,9 +26,9 @@ namespace PhotoAlbum.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddPicture([FromBody] AddPictureDto dto)
+        public async Task<IActionResult> AddPicture([FromBody] PictureDto dto)
         {
-            await _pictureService.AddPictureAsync(dto.Name, dto.Tags);
+            await _pictureService.AddPictureAsync(dto);
             return Ok("Picture added successfully.");
         }
 
@@ -63,6 +64,7 @@ namespace PhotoAlbum.API.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Picture>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetAllPictures()
         {
             try
@@ -132,6 +134,53 @@ namespace PhotoAlbum.API.Controllers
             if (!result)
                 return NotFound($"Either picture with id {pictureId} or tag '{tagName}' was not found.");
             return Ok($"Tag '{tagName}' removed from picture {pictureId} successfully.");
+        }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetPicturesByUserId(int userId)
+        {
+            var pictures = await _pictureService.GetPicturesByUserIdAsync(userId);
+            return Ok(pictures);
+        }
+
+        [Authorize]
+        [HttpGet("current-user")]
+        [ProducesResponseType(typeof(IEnumerable<Picture>), StatusCodes.Status200OK)] // When pictures are successfully returned
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)] // When userId is missing or invalid
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetPicturesForCurrentUser()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Invalid or missing userId in token.");
+
+            var pictures = await _pictureService.GetPicturesByUserIdAsync(userId);
+            return Ok(pictures);
+        }
+
+
+        [Authorize]
+        [HttpGet("current-user/pictures-by-tag/{tagId}")]
+        [ProducesResponseType(typeof(IEnumerable<PictureDto>), StatusCodes.Status200OK)] // הצלחה
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)] // כשאין userId בטוקן
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)] // כשלא נמצאו תמונות עם התגית
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)] // שגיאות כלליות
+        [Produces("application/json")]
+        public async Task<IActionResult> GetPicturesForCurrentUserByTag(int tagId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Invalid or missing userId in token.");
+
+            var pictures = await _pictureService.GetPicturesByTagAndUserIdAsync(tagId, userId);
+
+            if (pictures == null || !pictures.Any())
+                return NotFound("No pictures found for this tag.");
+
+            return Ok(pictures);
         }
     }
 }

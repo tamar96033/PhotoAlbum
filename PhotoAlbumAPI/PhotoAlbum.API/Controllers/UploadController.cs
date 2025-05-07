@@ -3,6 +3,7 @@ using Amazon.S3.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PhotoAlbum.Core.Dto;
 using PhotoAlbum.Core.Entities;
 using PhotoAlbum.Core.IServices;
 using System.IdentityModel.Tokens.Jwt;
@@ -19,22 +20,26 @@ namespace PhotoAlbum.API.Controllers
         private readonly IAmazonS3 _s3Client;
         private readonly IS3Service _s3Service;
         private readonly IConfiguration _configuration;
+        private readonly IPictureService _pictureService;
 
-        public UploadController(IAmazonS3 s3Client, IS3Service s3Service, IConfiguration configuration)
+
+
+        public UploadController(IAmazonS3 s3Client, IS3Service s3Service, IConfiguration configuration, IPictureService pictureService)
         {
             _s3Client = s3Client;
             _s3Service = s3Service;
             _configuration = configuration;
+            _pictureService = pictureService;
         }
 
         //משיפי
         [HttpPost("upload-file")]
         [Authorize]
-        [ProducesResponseType(typeof(object), 200)]  // Success response type
+        [ProducesResponseType(typeof(string), 200)]  // Success response type
         [ProducesResponseType(typeof(string), 400)]  // Bad request response type (e.g., no file uploaded)
         [ProducesResponseType(typeof(string), 401)]  // Unauthorized response type (e.g., user ID not found in token)
         [ProducesResponseType(typeof(string), 500)]
-        public async Task<IActionResult> UploadFile(IFormFile file)
+        public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] string tags)
         {
             // שליפת מזהה המשתמש מהטוקן (אם יש לך Claim בשם "NameIdentifier")
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -46,11 +51,17 @@ namespace PhotoAlbum.API.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
 
+            // Validate tags (optional: you can split by commas and validate the tags)
+            var tagList = tags?.Split(',').Select(tag => tag.Trim()).ToList() ?? new List<string>();
+
+
             // יצירת שם קובץ ייחודי
             string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             Console.WriteLine(fileName);
 
             string bucketName = _configuration["AWS:BucketName"];
+
+
             // הגדרת בקשה להעלאת הקובץ ל-S3
             var putRequest = new PutObjectRequest
             {
@@ -67,21 +78,24 @@ namespace PhotoAlbum.API.Controllers
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                 return StatusCode((int)response.HttpStatusCode, "Error uploading file to S3.");
 
-
-            var picture = new Picture
+            ////////////////////////have to treat in the tags!!!!!!!!!!!!
+            var picture = new PictureDto
             {
-                Name = file.FileName,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
+                Name = Path.GetFileNameWithoutExtension(file.FileName) ?? $"Unnamed_{Guid.NewGuid()}",
                 UserId = int.Parse(userId),
-                Url = $"{bucketName}.s3.us-east-1.amazonaws.com/{fileName}"
+                Url = $"https://{bucketName}.s3.us-east-1.amazonaws.com/{fileName}",
+                Tags = tagList
             };
 
 
             // הוספת התמונה למסד הנתונים
-            //await _imageService.AddImageAsync(image);
+            await _pictureService.AddPictureAsync(picture);
+            //Response.ContentType = "application/json";
 
-            return Ok();
+
+
+
+            return Ok("the file uploaded successfully");
         }
             
 
@@ -110,6 +124,24 @@ namespace PhotoAlbum.API.Controllers
             var url = _s3Service.GeneratePresignedUrl(key);
 
             return Ok(new { url, key });
+        }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> UpdatePictureInDb(string name, string url, List<string> tags)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var picture = new PictureDto
+            {
+                Name = name,
+                UserId = int.Parse(userId),
+                Url = url,
+                Tags = tags,
+            };
+
+            await _pictureService.AddPictureAsync(picture);
+            return Ok(picture);
         }
     }
 }

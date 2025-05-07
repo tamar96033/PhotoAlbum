@@ -9,7 +9,7 @@ namespace PhotoAlbum.Core.IRepositories
 {
     public interface ITagRepository
     {
-        Task<Tag> GetTagByNameAsync(string name);
+        Task<Tag?> GetTagByNameAsync(string name);
         Tag AddTag(Tag tag);
         Task<IEnumerable<Tag>> GetAllTagsAsync();
         Task AddTagAsync(Tag tag);

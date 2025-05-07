@@ -23,5 +23,7 @@ namespace PhotoAlbum.Core.Entities
 
         [DataType(DataType.DateTime)]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public List<UserRole> UserRoles { get; set; } = new();
+
     }
 }

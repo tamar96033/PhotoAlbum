@@ -10,24 +10,22 @@ namespace PhotoAlbum.Core.Entities
 {
     public class UserRole
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public int Id { get; set; }
 
-        [Required]
         public int UserId { get; set; }
 
         [ForeignKey("UserId")]
-        [Required]
-        public required User User { get; set; }
+        public User User { get; set; }
 
-        [Required]
+        
         public int RoleId { get; set; }
 
         [ForeignKey("RoleId")]
-        [Required]
-        public required Role Role { get; set; }
+        public Role Role { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SetsRequiredMembers]
         public UserRole(User user, Role role)
         {
             User = user;

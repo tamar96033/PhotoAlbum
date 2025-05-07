@@ -44,24 +44,57 @@ namespace PhotoAlbum.API.Controllers
         }
 
 
+        //[HttpPost("register")]
+        //[AllowAnonymous]
+        //[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        //public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto dto)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    var result = await _authService.RegisterUserWithRoleAsync(dto);
+        //    if (!result)
+        //    {
+        //        return BadRequest("User registration failed. Possibly the user already exists or the role was not found.");
+        //    }
+        //    var token = await _authService.GenerateJwtTokenAsync(dto.Name ?? "", dto.Password ?? "");
+
+        //    return Ok(new { Token = token });
+        //}
         [HttpPost("register")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto dto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
+            dto.RoleName = "User"; // Force "User" role
 
             var result = await _authService.RegisterUserWithRoleAsync(dto);
             if (!result)
-            {
-                return BadRequest("User registration failed. Possibly the user already exists or the role was not found.");
-            }
-            var token = await _authService.GenerateJwtTokenAsync(dto.Name ?? "", dto.Password ?? "");
+                return BadRequest("User registration failed.");
 
+            var token = await _authService.GenerateJwtTokenAsync(dto.Name ?? "", dto.Password ?? "");
             return Ok(new { Token = token });
+        }
+
+        [HttpPost("register-admin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RegisterAdmin([FromBody]RegisterUserDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (dto.RoleName != "Admin")
+                return BadRequest("Only 'Admin' role is allowed here.");
+
+            var result = await _authService.RegisterUserWithRoleAsync(dto);
+            if (!result)
+                return BadRequest("Admin registration failed.");
+
+            return Ok("Admin registered successfully.");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using Amazon;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Configuration;
 using PhotoAlbum.Core.IServices;
@@ -23,7 +24,13 @@ namespace PhotoAlbum.Service.Services
             _s3Client = new AmazonS3Client(
                 configuration["AWS:AWS_ACCESS_KEY_ID"],
                 configuration["AWS:AWS_SECRET_ACCESS_KEY"],
-                new AmazonS3Config { RegionEndpoint = region }
+                 //new AmazonS3Config { RegionEndpoint = region }
+                 new AmazonS3Config
+                 {
+                     RegionEndpoint = RegionEndpoint.USEast1, // or your region
+                     ForcePathStyle = false, // important: use virtual-hosted–style URLs
+                     UseAccelerateEndpoint = false
+                 }
             );
         }
 
