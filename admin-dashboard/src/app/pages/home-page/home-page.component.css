@@ -1,0 +1,16 @@
+.home-container {
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    flex-wrap: wrap;
+  }
+  
+  .main-section {
+    flex: 2;
+    min-width: 300px;
+  }
+  
+  .about-section {
+    flex: 1;
+    min-width: 250px;
+  }

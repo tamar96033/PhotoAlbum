@@ -1,10 +1,12 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { Picture, User, UserWithPictureDto } from '../../services/api-client';
 import { ApiClientService } from '../../services/api-client.service';
+import { AddUserComponent } from "../add-user/add-user.component";
+
 
 @Component({
   selector: 'app-top-used-tags-chart',
-  imports: [ ],
+  imports: [AddUserComponent],
   templateUrl: './top-used-tags-chart.component.html',
   styleUrl: './top-used-tags-chart.component.css'
 })
@@ -78,10 +80,11 @@ export class TopUsedTagsChartComponent implements AfterViewInit {
     const result = await this.apiClient.client.usersWithPictures(token ?? "");
     console.log(result);
     this.users = result;
+    this.drawChart();
   }
 
   ngAfterViewInit(): void {
-    this.drawChart();
+    // this.drawChart();
   }
 
   drawChart() {
@@ -116,4 +119,6 @@ export class TopUsedTagsChartComponent implements AfterViewInit {
       ctx.fillText(user!.pictures!.length.toString(), 130 + barWidth, y + barHeight / 1.5);
     });
   }
+
+  addUser: boolean = false;
 }

@@ -358,7 +358,7 @@ export class ApiClient {
      * @param body (optional) 
      * @return OK
      */
-    register(body: RegisterUserDto | undefined): Promise<void> {
+    register(body: RegisterUserDto | undefined): Promise<any> {
         let url_ = this.baseUrl + "/api/Auth/register";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -369,6 +369,7 @@ export class ApiClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "text/plain"
             }
         };
 
@@ -377,26 +378,38 @@ export class ApiClient {
         });
     }
 
-    protected processRegister(response: Response): Promise<void> {
+    protected processRegister(response: Response): Promise<any> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result400 = resultData400 !== undefined ? resultData400 : <any>null;
+    
+            return throwException("Bad Request", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<any>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    registerAdmin(body: RegisterUserDto | undefined): Promise<void> {
+    registerAdmin(body: RegisterAdminDto | undefined): Promise<string> {
         let url_ = this.baseUrl + "/api/Auth/register-admin";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -407,6 +420,7 @@ export class ApiClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "text/plain"
             }
         };
 
@@ -415,19 +429,37 @@ export class ApiClient {
         });
     }
 
-    protected processRegisterAdmin(response: Response): Promise<void> {
+    protected processRegisterAdmin(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<string>(null as any);
     }
 
     /**
@@ -1899,6 +1931,58 @@ export interface IProblemDetails {
     [key: string]: any;
 }
 
+export class RegisterAdminDto implements IRegisterAdminDto {
+    name?: string | undefined;
+    email?: string | undefined;
+    password?: string | undefined;
+    roleName?: string | undefined;
+    registerManagerToken?: string | undefined;
+
+    constructor(data?: IRegisterAdminDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.email = _data["email"];
+            this.password = _data["password"];
+            this.roleName = _data["roleName"];
+            this.registerManagerToken = _data["registerManagerToken"];
+        }
+    }
+
+    static fromJS(data: any): RegisterAdminDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegisterAdminDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["email"] = this.email;
+        data["password"] = this.password;
+        data["roleName"] = this.roleName;
+        data["registerManagerToken"] = this.registerManagerToken;
+        return data;
+    }
+}
+
+export interface IRegisterAdminDto {
+    name?: string | undefined;
+    email?: string | undefined;
+    password?: string | undefined;
+    roleName?: string | undefined;
+    registerManagerToken?: string | undefined;
+}
+
 export class RegisterUserDto implements IRegisterUserDto {
     name?: string | undefined;
     email?: string | undefined;
@@ -2269,6 +2353,86 @@ export interface IUserWithPictureDto {
     id?: number;
     name?: string | undefined;
     pictures?: PictureDto[] | undefined;
+}
+
+export class ValidationProblemDetails implements IValidationProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+    errors?: { [key: string]: string[]; } | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IValidationProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key] !== undefined ? _data["errors"][key] : [];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): ValidationProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValidationProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
+        return data;
+    }
+}
+
+export interface IValidationProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+    errors?: { [key: string]: string[]; } | undefined;
+
+    [key: string]: any;
 }
 
 export interface FileParameter {

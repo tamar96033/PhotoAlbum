@@ -1,2 +1,8 @@
 <p>top-used-tags-chart works!</p>
 <canvas #canvas width="600" height="300"></canvas>
+
+<button (click)='addUser = !addUser'>add-user</button>
+
+@if(addUser){
+    <app-add-user></app-add-user>
+}
