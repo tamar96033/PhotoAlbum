@@ -14,5 +14,9 @@ namespace PhotoAlbum.Core.Dto
         public List<string>? Tags { get; set; } = new List<string>();
         public int UserId { get; set; }
         public string Url { get; set; }
+
+        //for gemini
+        public string Base64ImageData { get; set; } = "";
+
     }
 }

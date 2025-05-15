@@ -22,6 +22,8 @@ namespace PhotoAlbum.Core.Entities
         [StringLength(255)]
         public required string Url { get; set; }
 
+        public string? Base64ImageData { get; set; }
+
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

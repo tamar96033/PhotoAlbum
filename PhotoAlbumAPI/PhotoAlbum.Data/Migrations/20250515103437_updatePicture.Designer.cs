@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PhotoAlbum.Data;
 
@@ -11,9 +12,11 @@ using PhotoAlbum.Data;
 namespace PhotoAlbum.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250515103437_updatePicture")]
+    partial class updatePicture
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,6 +83,7 @@ namespace PhotoAlbum.Data.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Base64ImageData")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedAt")
@@ -161,18 +165,18 @@ namespace PhotoAlbum.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1147),
+                            CreatedAt = new DateTime(2025, 5, 15, 10, 34, 36, 349, DateTimeKind.Utc).AddTicks(6879),
                             Description = "Administrator role",
                             Name = "Admin",
-                            UpdatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1148)
+                            UpdatedAt = new DateTime(2025, 5, 15, 10, 34, 36, 349, DateTimeKind.Utc).AddTicks(6880)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1169),
+                            CreatedAt = new DateTime(2025, 5, 15, 10, 34, 36, 349, DateTimeKind.Utc).AddTicks(6898),
                             Description = "User role",
                             Name = "User",
-                            UpdatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1176)
+                            UpdatedAt = new DateTime(2025, 5, 15, 10, 34, 36, 349, DateTimeKind.Utc).AddTicks(6899)
                         });
                 });
 
@@ -250,11 +254,11 @@ namespace PhotoAlbum.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1279),
+                            CreatedAt = new DateTime(2025, 5, 15, 10, 34, 36, 349, DateTimeKind.Utc).AddTicks(7045),
                             Email = "admin@admin.com",
                             Name = "admin",
                             Password = "admin123",
-                            UpdatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1280)
+                            UpdatedAt = new DateTime(2025, 5, 15, 10, 34, 36, 349, DateTimeKind.Utc).AddTicks(7046)
                         });
                 });
 

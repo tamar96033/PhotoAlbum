@@ -123,7 +123,8 @@ namespace PhotoAlbum.Data.Repositories
                        {
                            Id = p.Id,
                            Url = p.Url,
-                           Name = p.Name
+                           Name = p.Name,
+                           Base64ImageData = p.Base64ImageData,
                        }).ToList()
                })
                .ToListAsync();

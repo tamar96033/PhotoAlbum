@@ -162,17 +162,27 @@ namespace PhotoAlbum.Data.Repositories
                 .ThenInclude(pt => pt.Tag)
                 .ToListAsync();
 
+            //var pictureDtos = pictures.Select(p => new PictureDto
+            //{
+            //    Name = p.Name,
+            //    UserId = p.UserId,
+            //    Url = p.Url,  // assuming you have a Url property in the Picture model
+            //    Tags = p.PictureTags?
+            //        .Where(pt => pt.TagId == tagId)  // filter only the relevant tag(s)
+            //        .Select(pt => pt.Tag.Name)       // select the tag names
+            //        .ToList()
+            //}).ToList();
             var pictureDtos = pictures.Select(p => new PictureDto
             {
                 Name = p.Name,
                 UserId = p.UserId,
                 Url = p.Url,  // assuming you have a Url property in the Picture model
+                Base64ImageData = p.Base64ImageData, // <-- added this line
                 Tags = p.PictureTags?
-                    .Where(pt => pt.TagId == tagId)  // filter only the relevant tag(s)
-                    .Select(pt => pt.Tag.Name)       // select the tag names
-                    .ToList()
+        .Where(pt => pt.TagId == tagId)  // filter only the relevant tag(s)
+        .Select(pt => pt.Tag.Name)       // select the tag names
+        .ToList()
             }).ToList();
-
             return pictureDtos;
         }
     }

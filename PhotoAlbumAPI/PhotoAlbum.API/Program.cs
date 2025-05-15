@@ -170,9 +170,11 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IPictureRepository, PictureRepository>();
 builder.Services.AddScoped<IPictureService, PictureService>();
+builder.Services.AddScoped<IAIPictureService, AIPictureService>();
 builder.Services.AddScoped<ITagService, TagService>();
 
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+builder.Services.AddHttpClient<IAIPictureService, AIPictureService>();
 
 builder.Services.AddDbContext<DataContext>();
 //builder.Services.AddDbContext<DataContext>(options =>

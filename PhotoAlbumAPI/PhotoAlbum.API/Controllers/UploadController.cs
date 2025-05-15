@@ -21,18 +21,19 @@ namespace PhotoAlbum.API.Controllers
         private readonly IS3Service _s3Service;
         private readonly IConfiguration _configuration;
         private readonly IPictureService _pictureService;
+        private readonly IAIPictureService _aIPictureService;
 
 
-
-        public UploadController(IAmazonS3 s3Client, IS3Service s3Service, IConfiguration configuration, IPictureService pictureService)
+        public UploadController(IAmazonS3 s3Client, IS3Service s3Service, IConfiguration configuration, IPictureService pictureService, IAIPictureService aIPictureService)
         {
             _s3Client = s3Client;
             _s3Service = s3Service;
             _configuration = configuration;
             _pictureService = pictureService;
+            _aIPictureService = aIPictureService;
         }
 
-        //משיפי
+
         [HttpPost("upload-file")]
         [Authorize]
         [ProducesResponseType(typeof(string), 200)]  // Success response type
@@ -41,28 +42,32 @@ namespace PhotoAlbum.API.Controllers
         [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] string tags)
         {
-            // שליפת מזהה המשתמש מהטוקן (אם יש לך Claim בשם "NameIdentifier")
+            // Get the userId from the token (if you have a claim named "NameIdentifier")
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (userId == null)
                 return Unauthorized("User ID not found in token.");
 
-            // בדיקת קובץ
+            // Validate the uploaded file
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
 
             // Validate tags (optional: you can split by commas and validate the tags)
             var tagList = tags?.Split(',').Select(tag => tag.Trim()).ToList() ?? new List<string>();
 
-
-            // יצירת שם קובץ ייחודי
-            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            // Generate a unique file name
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             Console.WriteLine(fileName);
 
-            string bucketName = _configuration["AWS:BucketName"];
+            var bucketName = _configuration["AWS:BucketName"];
 
+            // Convert the image to Base64
+            var base64Image = await ConvertImageToBase64Async(file);
 
-            // הגדרת בקשה להעלאת הקובץ ל-S3
+            // Log the Base64 string (optional, can be removed after testing)
+            Console.WriteLine($"Base64 Image: {base64Image}");
+
+            // Define the request to upload the file to S3
             var putRequest = new PutObjectRequest
             {
                 BucketName = bucketName,
@@ -71,33 +76,107 @@ namespace PhotoAlbum.API.Controllers
                 ContentType = file.ContentType
             };
 
-            // העלאת הקובץ ל-S3
+            // Upload the file to S3
             var response = await _s3Client.PutObjectAsync(putRequest);
 
-            // אם העלאת הקובץ נכשלה
+            // If the upload fails
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                 return StatusCode((int)response.HttpStatusCode, "Error uploading file to S3.");
 
-            ////////////////////////have to treat in the tags!!!!!!!!!!!!
+            // Create the PictureDto object, including the Base64 image and tags
             var picture = new PictureDto
             {
                 Name = Path.GetFileNameWithoutExtension(file.FileName) ?? $"Unnamed_{Guid.NewGuid()}",
                 UserId = int.Parse(userId),
                 Url = $"https://{bucketName}.s3.us-east-1.amazonaws.com/{fileName}",
-                Tags = tagList
+                Tags = tagList,
+                Base64ImageData = base64Image
             };
+            var classify = await _aIPictureService.AnalyzeImageAsync(picture);
+            // Optionally, store or process the Base64 image in your database or other service
+            // picture.Base64Image = base64Image;
 
-
-            // הוספת התמונה למסד הנתונים
+            // Add the picture to the database (you can use the Base64 if needed later)
             await _pictureService.AddPictureAsync(picture);
-            //Response.ContentType = "application/json";
 
-
-
-
-            return Ok("the file uploaded successfully");
+            return Ok(classify);
         }
-            
+
+        // Method to convert the image file to Base64
+        private async Task<string> ConvertImageToBase64Async(IFormFile imageFile)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                // Copy the file content into the memory stream
+                await imageFile.CopyToAsync(memoryStream);
+
+                // Convert the memory stream to a byte array
+                byte[] imageBytes = memoryStream.ToArray();
+
+                // Convert the byte array to Base64
+                return Convert.ToBase64String(imageBytes);
+            }
+        }
+
+        //public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] string tags)
+        //{
+        //    // שליפת מזהה המשתמש מהטוקן (אם יש לך Claim בשם "NameIdentifier")
+        //    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        //    if (userId == null)
+        //        return Unauthorized("User ID not found in token.");
+
+        //    // בדיקת קובץ
+        //    if (file == null || file.Length == 0)
+        //        return BadRequest("No file uploaded.");
+
+        //    // Validate tags (optional: you can split by commas and validate the tags)
+        //    var tagList = tags?.Split(',').Select(tag => tag.Trim()).ToList() ?? new List<string>();
+
+
+        //    // יצירת שם קובץ ייחודי
+        //    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+        //    Console.WriteLine(fileName);
+
+        //    string bucketName = _configuration["AWS:BucketName"];
+
+
+        //    // הגדרת בקשה להעלאת הקובץ ל-S3
+        //    var putRequest = new PutObjectRequest
+        //    {
+        //        BucketName = bucketName,
+        //        Key = fileName,
+        //        InputStream = file.OpenReadStream(),
+        //        ContentType = file.ContentType
+        //    };
+
+        //    // העלאת הקובץ ל-S3
+        //    var response = await _s3Client.PutObjectAsync(putRequest);
+
+        //    // אם העלאת הקובץ נכשלה
+        //    if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+        //        return StatusCode((int)response.HttpStatusCode, "Error uploading file to S3.");
+
+        //    ////////////////////////have to treat in the tags!!!!!!!!!!!!
+        //    var picture = new PictureDto
+        //    {
+        //        Name = Path.GetFileNameWithoutExtension(file.FileName) ?? $"Unnamed_{Guid.NewGuid()}",
+        //        UserId = int.Parse(userId),
+        //        Url = $"https://{bucketName}.s3.us-east-1.amazonaws.com/{fileName}",
+        //        Tags = tagList
+        //    };
+
+
+        //    // הוספת התמונה למסד הנתונים
+        //    await _pictureService.AddPictureAsync(picture);
+        //    //Response.ContentType = "application/json";
+
+
+
+
+        //    return Ok("the file uploaded successfully");
+        //}
+
 
         [HttpGet("upload-url")]
         [Authorize]
