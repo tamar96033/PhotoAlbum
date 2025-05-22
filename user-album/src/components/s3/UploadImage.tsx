@@ -10,7 +10,7 @@ const convertToFileParameter = (file: File): FileParameter => ({
   
 const UploadImage = () => {
     const [file, setFile] = useState<File | null>(null);
-    const [tags, setTags] = useState('');
+    // const [tags, setTags] = useState('');
     const [uploading, setUploading] = useState(false);
     // const { uploadFile } = useApiClient(); // הפונקציה שהגדרת ב-NSwag
     const token = "Bearer " + localStorage.getItem('token')
@@ -24,9 +24,9 @@ const UploadImage = () => {
         }
     };
 
-    const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTags(e.target.value);
-    };
+    // const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     setTags(e.target.value);
+    // };
 
     const handleUpload = async () => {
         if (!file) {
@@ -39,7 +39,7 @@ const UploadImage = () => {
 
             const fileParameter = convertToFileParameter(file);
               // Modify the request to include the headers
-              const response = await apiClient.uploadFile(token, fileParameter, tags);
+              const response = await apiClient.uploadFile(token, fileParameter);
             console.log('response', response);
             
             alert('File uploaded successfully!');
@@ -53,12 +53,12 @@ const UploadImage = () => {
     return (
         <div>
             <input type="file" onChange={handleFileChange} />
-            <input
+            {/* <input
                 type="text"
                 value={tags}
                 onChange={handleTagsChange}
                 placeholder="Enter tags, separated by commas"
-            />
+            /> */}
             <button onClick={handleUpload} disabled={uploading}>
                 {uploading ? 'Uploading...' : 'Upload'}
             </button>

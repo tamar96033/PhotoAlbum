@@ -5,7 +5,7 @@ import ProfileMenu from "./ProfileMenu";
 const NavBar = () => {
     return (
         <AppBar position="absolute" color="default" elevation={1} sx={{ top: 16, right: 16, left: 'auto', width: 'auto' }}>
-            <Toolbar sx={{ justifyContent: "space-between", px: 4 }}>
+            {/* <Toolbar sx={{ justifyContent: "space-between", px: 4 }}>
                 <Box display="flex" gap={2}>
                     <Button component={Link} to="/" color="primary">דף הבית</Button>
                     <Button component={Link} to="/pictures" color="primary">תמונות</Button>
@@ -16,7 +16,7 @@ const NavBar = () => {
                     התחברות
                 </Button>
                 <ProfileMenu/>
-            </Toolbar>
+            </Toolbar> */}
 
 
         </AppBar>

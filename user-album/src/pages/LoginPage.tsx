@@ -1,93 +1,37 @@
-import { useState } from "react"
-import Login from "../components/Login"
-import Register from "../components/Register"
-import { Button, Card, CardContent, Stack, Typography } from "@mui/material";
+import { LoginForm } from "../components/auth/loginForm";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
-    const [login, setLogin] = useState(false);
-    const [register, setRegister] = useState(false);
+    // const [login, setLogin] = useState(false);
+    // const [register, setRegister] = useState(false);
   
-    const handleLogin = () => {
-      setLogin(!login);
-      setRegister(false);
-    };
+    // const handleLogin = () => {
+    //   setLogin(!login);
+    //   setRegister(false);
+    // };
   
-    const handleRegister = () => {
-      setRegister(!register);
-      setLogin(false);
-    };
+    // const handleRegister = () => {
+    //   setRegister(!register);
+    //   setLogin(false);
+    // };
   
-    return (
-    //   <Stack
-    //     alignItems="center"
-    //     justifyContent="center"
-    //     height="100vh"
-    //     bgcolor="#f5f5f5"
-    //   >
-        <Card sx={{ width: 400, p: 3, borderRadius: 3, boxShadow: 5 }}>
-          <CardContent>
-            <Typography variant="h5" gutterBottom align="center">
-              Welcome
-            </Typography>
-  
-            <Stack direction="row" spacing={2} justifyContent="center" mb={3}>
-              <Button
-                variant={login ? "contained" : "outlined"}
-                onClick={handleLogin}
-                fullWidth
-              >
-                Login
-              </Button>
-              <Button
-                variant={register ? "contained" : "outlined"}
-                onClick={handleRegister}
-                fullWidth
-              >
-                Register
-              </Button>
-            </Stack>
-  
-            {login && <Login />}
-            {register && <Register />}
-          </CardContent>
-        </Card>
-    //   </Stack>
-    );
+      return (<>
+        <div className="container flex h-screen w-screen flex-col items-center justify-center">
+          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+            <div className="flex flex-col space-y-2 text-center">
+              <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+              <p className="text-sm text-muted-foreground">Enter your credentials to sign in to your account</p>
+            </div>
+            <LoginForm />
+            <p className="px-8 text-center text-sm text-muted-foreground">
+              <Link to="/register" className="hover:text-brand underline underline-offset-4">
+                Don&apos;t have an account? Sign Up
+              </Link>
+            </p>
+          </div>
+        </div>
+        </>
+      )
   };
 
 export default LoginPage
-
-
-// import { FormEvent, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { login } from '../services/AuthService';
-// import { useAuth } from '../hooks/useAuth';
-
-// export default function LoginPage() {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const { setUser } = useAuth();
-//   const navigate = useNavigate();
-
-//   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-//     console.log('arrived to LoginPage to handleSubmit');
-    
-//     e.preventDefault();
-//     const user = await login(email, password);
-//     if (user) {
-//       localStorage.setItem('user', JSON.stringify(user));
-//       setUser(user);
-//       navigate('/gallery');
-//     } else {
-//       alert('ההתחברות נכשלה');
-//     }
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" />
-//       <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" />
-//       <button type="submit">התחבר</button>
-//     </form>
-//   );
-// }
