@@ -39,5 +39,9 @@ namespace PhotoAlbum.Core.Entities
         [Required]
         [ForeignKey("UserId")]
         public User User { get; set; }
+
+
+        public int? AlbumId { get; set; }
+        public Album? Album { get; set; }
     }
 }

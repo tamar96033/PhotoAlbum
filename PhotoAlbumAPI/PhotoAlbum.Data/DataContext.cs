@@ -41,6 +41,12 @@ namespace PhotoAlbum.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Album>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.Albums)
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
 
@@ -93,54 +99,5 @@ namespace PhotoAlbum.Data
             }
             );
         }
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)//putting the roles
-        //{
-        //    base.OnModelCreating(modelBuilder);
-
-        //    var roleAdmin = new Role
-        //    {
-        //        Id = 1,
-        //        Name = "Admin",
-        //        Description = "Administrator role",
-        //        CreatedAt = DateTime.UtcNow,
-        //        UpdatedAt = DateTime.UtcNow
-        //    };
-        //    // Seed Roles data
-        //    modelBuilder.Entity<Role>().HasData(
-        //      roleAdmin,
-        //        new Role
-        //        {
-        //            Id = 2,
-        //            Name = "User",
-        //            Description = "user role",
-        //            CreatedAt = DateTime.UtcNow,
-        //            UpdatedAt = DateTime.UtcNow
-        //        }
-        //    );
-        //    var admin = new User
-        //    {
-        //        Id = 1,
-        //        Name = "admin",
-        //        Email = "admin@admin.com",
-        //        Password = "admin123", // ⚠️ In production, hash the password!
-        //        CreatedAt = DateTime.UtcNow,
-        //        UpdatedAt = DateTime.UtcNow
-        //    };
-        //    // Seed Admin User
-        //    modelBuilder.Entity<User>().HasData(admin);
-
-        //    //modelBuilder.Entity<UserRole>()
-        //    //    .HasKey(ur => new { ur.UserId, ur.RoleId });
-
-        //    var userRole = new UserRole
-        //    {
-        //        UserId = admin.Id,
-        //        RoleId = roleAdmin.Id
-        //    };
-        //    modelBuilder.Entity<UserRole>().HasData(
-        //            //new UserRole(admin, roleAdmin)
-
-        //        );
-        //}
     }
 }

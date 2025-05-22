@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using PhotoAlbum.Core.Dto;
 using PhotoAlbum.Core.Entities;
 using PhotoAlbum.Core.IRepositories;
@@ -17,13 +18,16 @@ namespace PhotoAlbum.Service.Services
         private readonly IRepositoryManager _repositoryManager;
         private readonly ITagRepository _tagRepository;
         private readonly IMapper _mapper;
-
-        public PictureService(IPictureRepository pictureRepository, IRepositoryManager repositoryManager, ITagRepository tagRepository, IMapper mapper)
+        private readonly IS3Service _s3Service;
+        private readonly IAIPictureService _aiService;
+        public PictureService(IPictureRepository pictureRepository, IRepositoryManager repositoryManager, ITagRepository tagRepository, IMapper mapper, IS3Service s3Service, IAIPictureService aIPictureService)
         {
             _pictureRepository = pictureRepository;
             _repositoryManager = repositoryManager;
             _tagRepository = tagRepository;
             _mapper = mapper;
+            _s3Service = s3Service;
+            _aiService = aIPictureService;
         }
 
 
@@ -40,7 +44,7 @@ namespace PhotoAlbum.Service.Services
             var pictureDto = _mapper.Map<PictureDto>(picture);
 
             // Now populate the tags
-            pictureDto.Tags = picture.PictureTags?.Select(pt => pt.Tag.Name ?? "").ToList() ?? new List<string>();
+            //pictureDto.Tags = picture.PictureTags?.Select(pt => pt.Tag.Name ?? "").ToList() ?? new List<string>();
 
             return pictureDto;
         }
@@ -74,22 +78,22 @@ namespace PhotoAlbum.Service.Services
             //    });
             //}
 
-            foreach (var tagName in pictureDto.Tags)
-            {
-                if (string.IsNullOrWhiteSpace(tagName)) continue;
+            //foreach (var tagName in pictureDto.Tags)
+            //{
+            //    if (string.IsNullOrWhiteSpace(tagName)) continue;
 
-                var tag = await _tagRepository.GetTagByNameAsync(tagName);
-                if (tag == null)
-                {
-                    tag = _tagRepository.AddTag(new Tag { Name = tagName });
-                }
+            //    var tag = await _tagRepository.GetTagByNameAsync(tagName);
+            //    if (tag == null)
+            //    {
+            //        tag = _tagRepository.AddTag(new Tag { Name = tagName });
+            //    }
 
-                picture.PictureTags.Add(new PictureTag
-                {
-                    TagId = tag.Id,
-                    Tag = tag
-                });
-            }
+            //    picture.PictureTags.Add(new PictureTag
+            //    {
+            //        TagId = tag.Id,
+            //        Tag = tag
+            //    });
+            //}
 
             _pictureRepository.AddPicture(picture);
             await _repositoryManager.SaveAsync();
@@ -160,7 +164,7 @@ namespace PhotoAlbum.Service.Services
             _pictureRepository.UpdatePicture(picture);
 
             // Now update the tags using the repository method
-            await _pictureRepository.UpdatePictureTagsAsync(id, updateDto.Tags ?? new List<string>());
+            await _pictureRepository.UpdatePictureTagsAsync(id, new List<string>());// updateDto.Tags ??
 
             // Save all changes
             await _repositoryManager.SaveAsync();
@@ -193,5 +197,54 @@ namespace PhotoAlbum.Service.Services
        //.ThenInclude(pt => pt.Tag)  // Optionally include the actual tag object if needed
        //.ToListAsync();
         }
+
+
+        //public async Task<List<object>> UploadPicturesAsync(List<IFormFile> files, int userId)
+        //{
+        //    var results = new List<object>();
+
+        //    foreach (var file in files)
+        //    {
+        //        if (file == null || file.Length == 0)
+        //        {
+        //            results.Add(new { File = file?.FileName, Error = "Empty file." });
+        //            continue;
+        //        }
+
+        //        var base64 = await ConvertToBase64(file);
+        //        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+
+        //        var s3Url = await _s3Service.UploadFileToS3Async(file, fileName, "");
+        //        if (s3Url == null)
+        //        {
+        //            results.Add(new { File = file.FileName, Error = "Failed to upload." });
+        //            continue;
+        //        }
+
+        //        var picture = new PictureDto
+        //        {
+        //            Name = Path.GetFileNameWithoutExtension(file.FileName),
+        //            UserId = userId,
+        //            Url = s3Url,
+        //            Base64ImageData = base64
+        //        };
+
+        //        var classifyResult = await _aiService.AnalyzeImageAsync(picture, userId);
+        //        await _pictureRepository.AddPicture(picture);
+
+        //        results.Add(classifyResult);
+        //    }
+
+        //    return results;
+        //}
+
+        private async Task<string> ConvertToBase64(IFormFile file)
+        {
+            using var ms = new MemoryStream();
+            await file.CopyToAsync(ms);
+            var bytes = ms.ToArray();
+            return Convert.ToBase64String(bytes);
+        }
+
     }
 }

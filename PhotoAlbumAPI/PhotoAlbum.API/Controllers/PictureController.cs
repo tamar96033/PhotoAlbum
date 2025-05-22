@@ -136,7 +136,8 @@ namespace PhotoAlbum.API.Controllers
             return Ok($"Tag '{tagName}' removed from picture {pictureId} successfully.");
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet("pictures-by-user/{userId}")]
+        [ProducesResponseType(typeof(PictureDto[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPicturesByUserId(int userId)
         {
             var pictures = await _pictureService.GetPicturesByUserIdAsync(userId);

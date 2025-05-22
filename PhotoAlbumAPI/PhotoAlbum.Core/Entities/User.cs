@@ -30,5 +30,8 @@ namespace PhotoAlbum.Core.Entities
 
         public List<UserRole> UserRoles { get; set; }
         //public List<Role> Roles { get; set; }
+
+        public ICollection<Album> Albums { get; set; } = new List<Album>();
+
     }
 }

@@ -69,29 +69,5 @@ namespace PhotoAlbum.Service.Services
             }
         }
 
-        //public S3Service(IAmazonS3 s3Client, IConfiguration configuration)
-        //{
-        //    _s3Client = s3Client;
-        //    _bucketName = configuration["AWS:BucketName"];
-        //}
-
-        //public async Task<List<string>> ListFilesAsync()
-        //{
-        //    var request = new ListObjectsV2Request
-        //    {
-        //        BucketName = _bucketName
-        //    };
-
-        //    var response = await _s3Client.ListObjectsV2Async(request);
-        //    var fileUrls = new List<string>();
-
-        //    foreach (var obj in response.S3Objects)
-        //    {
-        //        string fileUrl = $"https://{_bucketName}.s3.amazonaws.com/{obj.Key}";
-        //        fileUrls.Add(fileUrl);
-        //    }
-
-        //    return fileUrls;
-        //}
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoAlbum.Core.Entities;
 using PhotoAlbum.Core.IServices;
+using System.Security.Claims;
 
 namespace PhotoAlbum.API.Controllers
 {
@@ -50,7 +51,7 @@ namespace PhotoAlbum.API.Controllers
             }
         }
         
-        [HttpGet("id")]
+        [HttpGet("album-by-id")]
         [ProducesResponseType(typeof(Album), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -135,7 +136,7 @@ namespace PhotoAlbum.API.Controllers
         }
 
 
-        [HttpDelete("id")]
+        [HttpDelete("delete-album-by-id/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -151,8 +152,9 @@ namespace PhotoAlbum.API.Controllers
                 }
 
                 _logger.LogInformation($"Album: {id} deleted successfully");
-                return Ok();
+                return Ok("the album was deleted successfuly");
             }
+
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An exception occurred while delete the album.");
@@ -160,5 +162,78 @@ namespace PhotoAlbum.API.Controllers
             }
         }
 
+
+
+
+        [HttpGet("albums-by-user")]
+        [ProducesResponseType(typeof(IEnumerable<Album>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAlbumsByUserAsync()
+        {
+            try
+            {
+                // שליפת userId מתוך ה-Claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub") ?? User.FindFirst("userId");
+                if (userIdClaim == null)
+                {
+                    _logger.LogWarning("User ID claim not found in token.");
+                    return Unauthorized("User ID not found.");
+                }
+
+                var userId = int.Parse(userIdClaim.Value);
+
+                var albums = await _albumService.GetAlbumsByUserIdAsync(userId);
+                if (albums == null || !albums.Any())
+                {
+                    _logger.LogWarning($"No albums found for user {userId}.");
+                    return NotFound($"No albums found for user {userId}.");
+                }
+
+                return Ok(albums);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving albums for user from token.");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPost("create-album")]
+        [Authorize]
+        [ProducesResponseType(typeof(Album), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateAlbumAsync([FromBody] Album album)
+        {
+            try
+            {
+                // שליפת userId מתוך ה-Claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub") ?? User.FindFirst("userId");
+                if (userIdClaim == null)
+                {
+                    _logger.LogWarning("User ID claim not found in token.");
+                    return Unauthorized("User ID not found.");
+                }
+
+                var userId = int.Parse(userIdClaim.Value);
+
+                // יצירת האלבום עם ה-UserId שהתקבל מהטוקן
+                var album2 = new Album
+                {
+                    Title = album.Title,
+                    Description = album.Description,
+                    CreatedAt = DateTime.UtcNow,
+                    UserId = userId
+                };
+
+                var createdAlbum = await _albumService.AddAlbumAsync(album2);
+                return Ok(createdAlbum);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating album.");
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

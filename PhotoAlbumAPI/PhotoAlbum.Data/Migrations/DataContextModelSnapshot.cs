@@ -45,7 +45,12 @@ namespace PhotoAlbum.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Albums");
                 });
@@ -79,6 +84,9 @@ namespace PhotoAlbum.Data.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AlbumId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Base64ImageData")
                         .HasColumnType("longtext");
 
@@ -102,6 +110,8 @@ namespace PhotoAlbum.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AlbumId");
 
                     b.HasIndex("UserId");
 
@@ -161,18 +171,18 @@ namespace PhotoAlbum.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1147),
+                            CreatedAt = new DateTime(2025, 5, 21, 16, 53, 38, 709, DateTimeKind.Utc).AddTicks(4313),
                             Description = "Administrator role",
                             Name = "Admin",
-                            UpdatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1148)
+                            UpdatedAt = new DateTime(2025, 5, 21, 16, 53, 38, 709, DateTimeKind.Utc).AddTicks(4313)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1169),
+                            CreatedAt = new DateTime(2025, 5, 21, 16, 53, 38, 709, DateTimeKind.Utc).AddTicks(4394),
                             Description = "User role",
                             Name = "User",
-                            UpdatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1176)
+                            UpdatedAt = new DateTime(2025, 5, 21, 16, 53, 38, 709, DateTimeKind.Utc).AddTicks(4405)
                         });
                 });
 
@@ -250,11 +260,11 @@ namespace PhotoAlbum.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1279),
+                            CreatedAt = new DateTime(2025, 5, 21, 16, 53, 38, 709, DateTimeKind.Utc).AddTicks(4561),
                             Email = "admin@admin.com",
                             Name = "admin",
                             Password = "admin123",
-                            UpdatedAt = new DateTime(2025, 5, 15, 10, 39, 23, 554, DateTimeKind.Utc).AddTicks(1280)
+                            UpdatedAt = new DateTime(2025, 5, 21, 16, 53, 38, 709, DateTimeKind.Utc).AddTicks(4562)
                         });
                 });
 
@@ -280,13 +290,29 @@ namespace PhotoAlbum.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PhotoAlbum.Core.Entities.Album", b =>
+                {
+                    b.HasOne("PhotoAlbum.Core.Entities.User", "User")
+                        .WithMany("Albums")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("PhotoAlbum.Core.Entities.Picture", b =>
                 {
+                    b.HasOne("PhotoAlbum.Core.Entities.Album", "Album")
+                        .WithMany("Pictures")
+                        .HasForeignKey("AlbumId");
+
                     b.HasOne("PhotoAlbum.Core.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Album");
 
                     b.Navigation("User");
                 });
@@ -348,6 +374,11 @@ namespace PhotoAlbum.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PhotoAlbum.Core.Entities.Album", b =>
+                {
+                    b.Navigation("Pictures");
+                });
+
             modelBuilder.Entity("PhotoAlbum.Core.Entities.Picture", b =>
                 {
                     b.Navigation("PictureTags");
@@ -365,6 +396,8 @@ namespace PhotoAlbum.Data.Migrations
 
             modelBuilder.Entity("PhotoAlbum.Core.Entities.User", b =>
                 {
+                    b.Navigation("Albums");
+
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618

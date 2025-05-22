@@ -81,8 +81,8 @@ namespace PhotoAlbum.Data.Repositories
         public async Task UpdatePictureTagsAsync(int pictureId, List<string> tagNames)
         {
             var picture = await _context.Pictures
-                                                  .Include(p => p.PictureTags).ThenInclude(pt => pt.Tag)
-                                                  .FirstOrDefaultAsync(p => p.Id == pictureId);
+                                    .Include(p => p.PictureTags).ThenInclude(pt => pt.Tag)
+                                    .FirstOrDefaultAsync(p => p.Id == pictureId);
 
             if (picture == null)
                 throw new ArgumentException("Picture not found", nameof(pictureId));
@@ -178,10 +178,10 @@ namespace PhotoAlbum.Data.Repositories
                 UserId = p.UserId,
                 Url = p.Url,  // assuming you have a Url property in the Picture model
                 Base64ImageData = p.Base64ImageData, // <-- added this line
-                Tags = p.PictureTags?
-        .Where(pt => pt.TagId == tagId)  // filter only the relevant tag(s)
-        .Select(pt => pt.Tag.Name)       // select the tag names
-        .ToList()
+                //Tags = p.PictureTags?
+        //.Where(pt => pt.TagId == tagId)  // filter only the relevant tag(s)
+        //.Select(pt => pt.Tag.Name)       // select the tag names
+        //.ToList()
             }).ToList();
             return pictureDtos;
         }

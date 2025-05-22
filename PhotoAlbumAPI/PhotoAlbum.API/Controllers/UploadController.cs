@@ -36,11 +36,11 @@ namespace PhotoAlbum.API.Controllers
 
         [HttpPost("upload-file")]
         [Authorize]
-        [ProducesResponseType(typeof(string), 200)]  // Success response type
+        [ProducesResponseType(typeof(object), 200)]  // Success response type
         [ProducesResponseType(typeof(string), 400)]  // Bad request response type (e.g., no file uploaded)
         [ProducesResponseType(typeof(string), 401)]  // Unauthorized response type (e.g., user ID not found in token)
         [ProducesResponseType(typeof(string), 500)]
-        public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] string tags)
+        public async Task<IActionResult> UploadFile(IFormFile file)
         {
             // Get the userId from the token (if you have a claim named "NameIdentifier")
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -53,7 +53,7 @@ namespace PhotoAlbum.API.Controllers
                 return BadRequest("No file uploaded.");
 
             // Validate tags (optional: you can split by commas and validate the tags)
-            var tagList = tags?.Split(',').Select(tag => tag.Trim()).ToList() ?? new List<string>();
+            //var tagList = tags?.Split(',').Select(tag => tag.Trim()).ToList() ?? new List<string>();
 
             // Generate a unique file name
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
@@ -89,10 +89,10 @@ namespace PhotoAlbum.API.Controllers
                 Name = Path.GetFileNameWithoutExtension(file.FileName) ?? $"Unnamed_{Guid.NewGuid()}",
                 UserId = int.Parse(userId),
                 Url = $"https://{bucketName}.s3.us-east-1.amazonaws.com/{fileName}",
-                Tags = tagList,
+                //Tags = tagList,
                 Base64ImageData = base64Image
             };
-            var classify = await _aIPictureService.AnalyzeImageAsync(picture);
+            var classify = await _aIPictureService.AnalyzeImageAsync(picture, int.Parse(userId));
             // Optionally, store or process the Base64 image in your database or other service
             // picture.Base64Image = base64Image;
 
@@ -178,6 +178,86 @@ namespace PhotoAlbum.API.Controllers
         //}
 
 
+
+        //[HttpPost("upload-multiple")]
+        //[Authorize]
+        //[ProducesResponseType(typeof(List<object>), 200)]
+        //[ProducesResponseType(typeof(string), 400)]
+        //[ProducesResponseType(typeof(string), 401)]
+        //[ProducesResponseType(typeof(string), 500)]
+        //public async Task<IActionResult> UploadMultipleFiles([FromForm] List<IFormFile> files)
+        //{
+        //    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //    if (userId == null) return Unauthorized("User ID not found.");
+
+        //    if (files == null || files.Count == 0)
+        //        return BadRequest("No files uploaded.");
+
+        //    var result = await _pictureService.UploadPicturesAsync(files, int.Parse(userId));
+        //    return Ok(result);
+        //}
+
+        [HttpPost("upload-multiple")]
+        [Authorize]
+        [ProducesResponseType(typeof(List<object>), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 401)]
+        [ProducesResponseType(typeof(string), 500)]
+        public async Task<IActionResult> UploadMultipleFiles(List<IFormFile> files)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+                return Unauthorized("User ID not found in token.");
+
+            if (files == null || !files.Any())
+                return BadRequest("No files uploaded.");
+
+            var bucketName = _configuration["AWS:BucketName"];
+            var results = new List<object>();
+
+            foreach (var file in files)
+            {
+                if (file == null || file.Length == 0)
+                {
+                    results.Add(new { File = file?.FileName, Error = "Empty or null file." });
+                    continue;
+                }
+
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var base64Image = await ConvertImageToBase64Async(file);
+
+                var putRequest = new PutObjectRequest
+                {
+                    BucketName = bucketName,
+                    Key = fileName,
+                    InputStream = file.OpenReadStream(),
+                    ContentType = file.ContentType
+                };
+
+                var response = await _s3Client.PutObjectAsync(putRequest);
+                if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    results.Add(new { File = file.FileName, Error = "Failed to upload to S3." });
+                    continue;
+                }
+
+                var picture = new PictureDto
+                {
+                    Name = Path.GetFileNameWithoutExtension(file.FileName) ?? $"Unnamed_{Guid.NewGuid()}",
+                    UserId = int.Parse(userId),
+                    Url = $"https://{bucketName}.s3.us-east-1.amazonaws.com/{fileName}",
+                    Base64ImageData = base64Image
+                };
+
+                var classifyResult = await _aIPictureService.AnalyzeImageAsync(picture, int.Parse(userId));
+                await _pictureService.AddPictureAsync(picture);
+
+                results.Add(classifyResult);
+            }
+
+            return Ok(results);
+        }   
+
         [HttpGet("upload-url")]
         [Authorize]
         [ProducesResponseType(typeof(object), 200)]  // Success response type
@@ -207,7 +287,7 @@ namespace PhotoAlbum.API.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UpdatePictureInDb(string name, string url, List<string> tags)
+        public async Task<IActionResult> UpdatePictureInDb(string name, string url)//, List<string> tags
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -216,7 +296,7 @@ namespace PhotoAlbum.API.Controllers
                 Name = name,
                 UserId = int.Parse(userId),
                 Url = url,
-                Tags = tags,
+                //Tags = tags,
             };
 
             await _pictureService.AddPictureAsync(picture);

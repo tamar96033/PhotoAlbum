@@ -9,6 +9,6 @@ namespace PhotoAlbum.Core.IServices
 {
     public interface IAIPictureService
     {
-        Task<string> AnalyzeImageAsync(PictureDto imageRequest);
+        Task<string> AnalyzeImageAsync(PictureDto imageRequest, int id);
     }
 }
