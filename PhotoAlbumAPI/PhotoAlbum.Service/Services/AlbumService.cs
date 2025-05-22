@@ -51,6 +51,7 @@ namespace PhotoAlbum.Service.Services
                 if (result)
                 {
                     _logger.LogInformation($"Successfully deleted album with id {id}.");
+                    await _repositoryManager.SaveAsync();
                 }
                 else
                 {
@@ -79,7 +80,7 @@ namespace PhotoAlbum.Service.Services
             }
         }
 
-        public async Task<List<Album>?> GetAlbumsAsync()
+        public async Task<IEnumerable<Album>?> GetAlbumsAsync()
         {
             try
             {
@@ -118,5 +119,17 @@ namespace PhotoAlbum.Service.Services
             }
         }
 
+        public async Task<IEnumerable<Album>> GetAlbumsByUserIdAsync(int userId)
+        {
+            try
+            {
+                return await _albumRepository.GetAlbumsByUserIdAsync(userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while getting albums by user id.");
+                throw;
+            }
+        }
     }
 }

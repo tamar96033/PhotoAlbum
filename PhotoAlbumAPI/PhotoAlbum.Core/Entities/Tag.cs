@@ -12,13 +12,13 @@ namespace PhotoAlbum.Core.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int TagId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(50)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         
         // Navigation property for the many-to-many relationship
-        public virtual ICollection<PictureTag> PictureTags { get; set; }
+        public virtual ICollection<PictureTag> PictureTags { get; set; } = new List<PictureTag>();
     }
 }

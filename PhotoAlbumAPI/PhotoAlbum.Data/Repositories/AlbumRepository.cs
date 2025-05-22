@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PhotoAlbum.Core.Entities;
 using PhotoAlbum.Core.IRepositories;
@@ -24,7 +23,7 @@ namespace PhotoAlbum.Data.Repositories
         }
 
         //all the function and logics
-        public async Task<List<Album>?> GetAlbumsAsync()
+        public async Task<IEnumerable<Album>?> GetAlbumsAsync()
         {
             try
             {
@@ -80,27 +79,41 @@ namespace PhotoAlbum.Data.Repositories
             //}
         }
 
-        public async Task<bool> AddAlbumAsync(Album album)
+        public async Task<Album> AddAlbumAsync(Album album)
         {
+            //if (album == null)
+            //{
+            //    throw new ArgumentNullException(nameof(album), "Album cannot be null.");
+            //}
+
+            //try
+            //{
+            //    await _context.Albums.AddAsync(album);
+            //    return true;
+            //}
+            //catch (DbUpdateException dbEx)
+            //{
+            //    _logger.LogError(dbEx, "Database update error occurred while adding album.");
+            //    throw new Exception("Database update error occurred.", dbEx);
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while adding the album.");
+            //    throw new Exception("An error occurred while adding the album.", ex);
+            //}
             if (album == null)
-            {
-                throw new ArgumentNullException(nameof(album), "Album cannot be null.");
-            }
+                throw new ArgumentNullException(nameof(album));
 
             try
             {
-                await _context.Albums.AddAsync(album);
-                return true;
-            }
-            catch (DbUpdateException dbEx)
-            {
-                _logger.LogError(dbEx, "Database update error occurred while adding album.");
-                throw new Exception("Database update error occurred.", dbEx);
+                var result = await _context.Albums.AddAsync(album);
+                await _context.SaveChangesAsync(); // חשוב לשמור
+                return result.Entity;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while adding the album.");
-                throw new Exception("An error occurred while adding the album.", ex);
+                _logger.LogError(ex, "Error while adding album.");
+                throw;
             }
         }
 
@@ -122,6 +135,7 @@ namespace PhotoAlbum.Data.Repositories
             existingAlbum.Title = album.Title;
             existingAlbum.UpdatedAt = DateTime.UtcNow;
             existingAlbum.CreatedAt = album.CreatedAt;
+            existingAlbum.UserId = album.UserId;
 
             return true; // Update successful
         }
@@ -138,6 +152,17 @@ namespace PhotoAlbum.Data.Repositories
             _context.Albums.Remove(album);
 
             return true; // Indicate that the deletion was successful
+        }
+
+        public async Task<Album?> GetByTitleAsync(string title) =>
+            await _context.Albums.FirstOrDefaultAsync(a => a.Title == title);
+
+
+        public async Task<IEnumerable<Album>> GetAlbumsByUserIdAsync(int userId)
+        {
+            return await _context.Albums
+                .Where(a => a.UserId == userId)
+                .ToListAsync();
         }
     }
 }

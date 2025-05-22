@@ -1,0 +1,30 @@
+<p>add-user works!</p>
+
+<form [formGroup]="addForm" (ngSubmit)="onSubmit()" class="login-form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+    
+    <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" />
+        @if(addForm.get('email')?.invalid && addForm.get('email')?.touched)
+        {<mat-error>
+          email is not valid.
+        </mat-error>}
+      </mat-form-field>
+    
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" />
+      @if(addForm.get('password')?.invalid && addForm.get('password')?.touched)
+      {<mat-error>
+        Password is required.
+      </mat-error>}
+    </mat-form-field>
+  
+    <button mat-raised-button color="primary" type="submit" [disabled]="addForm.invalid">
+      Login
+    </button>
+  </form>
