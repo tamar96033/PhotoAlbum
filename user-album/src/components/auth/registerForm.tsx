@@ -16,7 +16,7 @@ const formSchema = z
   .object({
     name: z.string().min(2, { message: "Name must be at least 2 characters." }),
     email: z.string().email({ message: "Invalid email address." }),
-    password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+    password: z.string().min(5, { message: "Password must be at least 5 characters." }),
   })
 
 export function RegisterForm() {
@@ -51,7 +51,7 @@ export function RegisterForm() {
         description: "You can now log in with your credentials.",
       })
 
-      navigate("/home-page") // נווט לדף התחברות אחרי הרשמה
+      navigate("/dashboard") // נווט לדף התחברות אחרי הרשמה
     } catch (error) {
       toast({
         variant: "destructive",

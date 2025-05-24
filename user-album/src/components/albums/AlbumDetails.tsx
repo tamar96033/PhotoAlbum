@@ -22,15 +22,17 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog"
 import { Heading } from "../ui/heading"
-import { PictureDto } from "../../api/client"
+import { Album, PictureDto } from "../../api/client"
+import { useApiClient } from "../../contexts/ApiClientContext"
 
 interface AlbumDetailsProps {
-  album: {
-    id: string
-    name: string
-    photoCount: number
-    createdAt: string
-  }
+  // album: {
+  //   id: string
+  //   name: string
+  //   photoCount: number
+  //   createdAt: string
+  // }
+  album: Album | null
   photos: PictureDto[]
 //   photos: Array<{
 //     id: string
@@ -45,27 +47,46 @@ export function AlbumDetails({ album, photos }: AlbumDetailsProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const apiClient = useApiClient();
+  const token = "Bearer " + localStorage.getItem('token')
 
   const handleRename = () => {
     toast({
       title: "Album renamed",
-      description: `${album.name} has been renamed.`,
+      description: `${album?.title} has been renamed.`,
     })
   }
 
   const handleDelete = () => {
     toast({
       title: "Album deleted",
-      description: `${album.name} has been deleted.`,
+      description: `${album?.title} has been deleted.`,
     })
     navigate("/dashboard/albums")
   }
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     toast({
       title: "Download started",
-      description: `Downloading ${album.name} album as a ZIP file.`,
+      description: `Downloading ${album?.title} album as a ZIP file.`,
     })
+
+    try {
+      const fileResponse = await apiClient.downloadZip(album?.id ?? 0, token);
+
+      const blob = fileResponse.data;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `album-${album?.title}.zip`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+  
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -76,7 +97,7 @@ export function AlbumDetails({ album, photos }: AlbumDetailsProps) {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <Heading as="h1" size="2xl">
-            {album.name}
+            {album?.title}
           </Heading>
         </div>
         <DropdownMenu>
@@ -86,10 +107,10 @@ export function AlbumDetails({ album, photos }: AlbumDetailsProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleRename}>
+            {/* <DropdownMenuItem onClick={handleRename}>
               <Edit className="mr-2 h-4 w-4" />
               Rename Album
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem onClick={handleDownload}>
               <Download className="mr-2 h-4 w-4" />
               Download Album
@@ -111,7 +132,7 @@ export function AlbumDetails({ album, photos }: AlbumDetailsProps) {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will permanently delete the "{album.name}" album and remove it from your albums list. The
+                    This will permanently delete the "{album?.title}" album and remove it from your albums list. The
                     photos will remain in your library.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -128,7 +149,7 @@ export function AlbumDetails({ album, photos }: AlbumDetailsProps) {
       </div>
 
       <div className="text-muted-foreground">
-        {album.photoCount} photos • Created {new Date(album.createdAt).toLocaleDateString()}
+        {/* {album.photoCount} photos • Created {new Date(album.createdAt).toLocaleDateString()} */}
       </div>
 
       <PhotoGrid photos={photos} onDelete={()=>{handleDelete()}}/>

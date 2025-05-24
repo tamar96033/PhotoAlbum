@@ -7,6 +7,7 @@ import { useToast } from "../ui/use-toast"
 // import { formatDistanceToNow } from "date-fns"
 import { Album } from "../../api/client"
 import { useApiClient } from "../../contexts/ApiClientContext"
+import placeholder from '@/assets/placeholder.svg';
 
 // interface Album {
 //   id: string
@@ -55,7 +56,7 @@ export function AlbumGrid({ albums, onAlbumDeleted }: AlbumGridProps) {
                         <Link to={`/dashboard/albums/${album.id}`}>
                             <div className="relative aspect-video overflow-hidden">
                                 <img
-                                    src={"/placeholder.svg"}//album.coverImage ||album.pictures?[0].url ||
+                                    src={album.pictures?.[0]?.url || placeholder}
                                     alt={album.title}
                                     className="object-cover w-full h-full transition-all hover:scale-105"
                                 />
@@ -83,10 +84,10 @@ export function AlbumGrid({ albums, onAlbumDeleted }: AlbumGridProps) {
                                             Open Album
                                         </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleRename(album)}>
+                                    {/* <DropdownMenuItem onClick={() => handleRename(album)}>
                                         <Edit className="mr-2 h-4 w-4" />
                                         Rename
-                                    </DropdownMenuItem>
+                                    </DropdownMenuItem> */}
                                     <DropdownMenuItem onClick={() => handleDelete(album)} className="text-red-500 focus:text-red-500">
                                         <Trash className="mr-2 h-4 w-4" />
                                         Delete

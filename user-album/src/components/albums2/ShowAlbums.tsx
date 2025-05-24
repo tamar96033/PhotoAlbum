@@ -35,7 +35,7 @@ const ShowAlbums = () => {
           {albums.map((album) => (
             <div
               key={album.id}
-              onClick={() => handleAlbumClick(album.id)}
+              onClick={() => handleAlbumClick(album.id ?? 0)}
               style={{
                 border: "1px solid #ccc",
                 padding: "1rem",

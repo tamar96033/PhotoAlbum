@@ -8,35 +8,79 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow"
 import { ApiClient, PictureDto } from "../../api/client"
 import { useApiClient } from "../../contexts/ApiClientContext"
+// async function downloadFile(url: string, fileName: string) {
+//   try {
+//     const response = await fetch(url);
+//     if (!response.ok) throw new Error('Network response was not ok');
+//     const blob = await response.blob();
 
+//     downloadFile(blob, fileName);
+//   } catch (error) {
+//     console.error('Download failed:', error);
+//   }
+//   // try {
+//   //   const response = await fetch(url);
+
+//   //   if (!response.ok) {
+//   //     throw new Error('Failed to fetch file from S3');
+//   //   }
+
+//     // const blob = await response.blob();
+//     // const downloadUrl = window.URL.createObjectURL(blob);
+
+//     // const a = document.createElement('a');
+//     // a.href = downloadUrl;
+//     // a.download = fileName;
+//     // document.body.appendChild(a);
+//     // a.click();
+//     // a.remove();
+
+//     // window.URL.revokeObjectURL(downloadUrl);
+//   // } catch (error) {
+//   //   console.error('Download error:', error);
+//   // }
+// }
 interface PhotoGridProps {
   photos: PictureDto[];
   onDelete: (photo: PictureDto) => void;
 }
 
-async function downloadFile(url: string, fileName: string) {
+function saveBlobToFile(blob: Blob, filename: string) {
+  console.log('on saveBlobToFile function');
+  
+  const url = window.URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', filename);
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  window.URL.revokeObjectURL(url);
+}
+
+async function downloadFile(url: string, filename: string) {
   try {
+    console.log('on downloadFile function')
     const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch file from S3');
-    }
-
+    if (!response.ok) throw new Error('Network response was not ok');
     const blob = await response.blob();
-    const downloadUrl = window.URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-    window.URL.revokeObjectURL(downloadUrl);
+    saveBlobToFile(blob, filename);
   } catch (error) {
-    console.error('Download error:', error);
+    console.error('Download failed:', error);
   }
 }
+function extractKeyFromUrl(url: string, bucketName: string): string {
+  const prefix = `https://${bucketName}.s3.us-east-1.amazonaws.com/`;
+  if (url.startsWith(prefix)) {
+    return url.substring(prefix.length);
+  }
+  return url; // fallback אם כבר מפתח
+}
+
 export function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
   const { toast } = useToast()
   const [selectedPhoto, setSelectedPhoto] = useState<PictureDto | null>(null)
@@ -44,14 +88,20 @@ export function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
   const token = "Bearer " + localStorage.getItem('token')
 
   const handleDownload = async (photo: PictureDto) => {
-   
+   console.log('on handledownload')
     toast({
       title: "Download started",
       description: `Downloading ${photo.name}...`,
     })
 
     
-  await downloadFile(photo.url!, photo?.name ?? "");
+  // await downloadFile(photo.url!, photo?.name ?? "");
+  const key = extractKeyFromUrl(photo.url ?? "", "photo-alum-tamar-testpnoren");
+    const response = await apiClient.presignedUrl(key, token)
+    console.log(response);
+    
+    const url = response.url
+    await downloadFile(url, photo?.name ?? "")
   }
 
   // const handleDelete = async (photo: PictureDto) => {
@@ -95,14 +145,14 @@ export function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onDelete(photo)}>
+                      <DropdownMenuItem onClick={() => handleDownload(photo)}>
                         <Download className="mr-2 h-4 w-4" />
                         Download
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleMoveToAlbum(photo)}>
+                      {/* <DropdownMenuItem onClick={() => handleMoveToAlbum(photo)}>
                         <FolderOpen className="mr-2 h-4 w-4" />
                         Move to Album
-                      </DropdownMenuItem>
+                      </DropdownMenuItem> */}
                       <DropdownMenuItem onClick={() => onDelete(photo)} className="text-red-500 focus:text-red-500">
                         <Trash className="mr-2 h-4 w-4" />
                         Delete
@@ -114,10 +164,10 @@ export function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
               <div className="p-2">
                 <div className="text-sm font-medium truncate">{photo.name}</div>
                 <div className="flex justify-between items-center mt-1">
-                  {/* <span className="text-xs text-muted-foreground">{photo.album}</span> */}
+                  <span className="text-xs text-muted-foreground">{photo.albumTitle ?? "unknown"}</span>
                   <span className="text-xs text-muted-foreground">
-                    {/* {formatDistanceToNow(new Date(photo.uploadedAt), { addSuffix: true })} */}
-                    uploaded 2 days ago
+                    {photo.createdAt ? formatDistanceToNow(new Date(photo.createdAt), { addSuffix: true })
+                    : "Unknown time"}
                   </span>
                 </div>
               </div>
