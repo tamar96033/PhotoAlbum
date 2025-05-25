@@ -1,9 +1,6 @@
-import { Heading } from "../components/ui/heading"
-import { PhotoGrid } from "../components/photos/PhotoGrig"
-import { Button } from "../components/ui/button"
-import { ArrowLeft, Upload } from "lucide-react"
-import { Link, useParams } from "react-router-dom"
-import { Album, Picture, PictureDto } from "../api/client"
+
+import { useParams } from "react-router-dom"
+import { Album, PictureDto } from "../api/client"
 import { useApiClient } from "../contexts/ApiClientContext"
 import { useEffect, useState } from "react"
 import { AlbumDetails } from "../components/albums/AlbumDetails"
@@ -95,7 +92,7 @@ export default function AlbumPage() {
 
   const [album, setAlbum] = useState<Album | null>(null)
   const [photos, setPhotos] = useState<PictureDto[]>([])
-  const [loading, setLoading] = useState(true)
+  // const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!albumId) return
@@ -123,7 +120,7 @@ export default function AlbumPage() {
       } catch (error) {
         console.error("Error loading album:", error)
       } finally {
-        setLoading(false)
+        // setLoading(false)
       }
     }
 

@@ -8,7 +8,7 @@ const ShowPicture = ({url}: {url: string}) => {
     setIsClicked(true)
   }
   // const url = 'https://photo-alum-tamar-testpnoren.s3.us-east-1.amazonaws.com/a74fd91f-b9f3-4f4c-95c0-9c8c2910dbca.jpg'
-  const [loaded, setLoaded] = useState(false);
+  // const [loaded, setLoaded] = useState(false);
   return (<>
     <div style={{
       breakInside: 'avoid-column',

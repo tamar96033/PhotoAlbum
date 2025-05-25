@@ -2,7 +2,7 @@ import { useState } from "react";
 
 const DeleteImage = () => {
     const [message, setMessage] = useState('');
-    const [presignedUrl, setPresignedUrl] = useState('https://photo-alum-tamar-testpnoren.s3.us-east-1.amazonaws.com/1.png');
+    const [presignedUrl] = useState('https://photo-alum-tamar-testpnoren.s3.us-east-1.amazonaws.com/1.png');
   
     const handleDeleteImage = async () => {
       try {

@@ -3,7 +3,7 @@ import { PhotoGrid } from "../components/photos/PhotoGrig"
 import { Button } from "../components/ui/button"
 import { Upload } from "lucide-react"
 import { Link } from "react-router-dom"
-import { ApiClient, PictureDto } from "../api/client"
+import { PictureDto } from "../api/client"
 import { useApiClient } from "../contexts/ApiClientContext"
 import { useEffect, useState } from "react"
 
@@ -16,7 +16,7 @@ export default function PhotosPage() {
   //   uploadedAt: new Date(Date.now() - i * 86400000).toISOString(),
   // }))
   const [photos, setPhotos] = useState<PictureDto[]>([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const apiClient = useApiClient()
   const token = "Bearer " + localStorage.getItem('token')
 
@@ -46,7 +46,7 @@ export default function PhotosPage() {
       } catch (error) {
         console.error("Failed to load photos", error);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     }
 

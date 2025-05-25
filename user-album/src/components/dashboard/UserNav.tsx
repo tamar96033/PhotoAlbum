@@ -29,7 +29,7 @@ export function UserNav() {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-            <AvatarFallback>{user?.name[0] ?? 'U'}</AvatarFallback>
+            <AvatarFallback>{user?.name?.[0] ?? 'U'}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenu.Trigger>

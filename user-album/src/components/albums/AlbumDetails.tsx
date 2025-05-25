@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
-import { ArrowLeft, MoreHorizontal, Edit, Trash, Download } from "lucide-react"
+import { ArrowLeft, MoreHorizontal, Trash, Download } from "lucide-react"
 import { useToast } from "../ui/use-toast"
 import {
   AlertDialog,
@@ -50,12 +50,12 @@ export function AlbumDetails({ album, photos }: AlbumDetailsProps) {
   const apiClient = useApiClient();
   const token = "Bearer " + localStorage.getItem('token')
 
-  const handleRename = () => {
-    toast({
-      title: "Album renamed",
-      description: `${album?.title} has been renamed.`,
-    })
-  }
+  // const handleRename = () => {
+  //   toast({
+  //     title: "Album renamed",
+  //     description: `${album?.title} has been renamed.`,
+  //   })
+  // }
 
   const handleDelete = () => {
     toast({

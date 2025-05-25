@@ -2,11 +2,11 @@ import { useState } from "react"
 import { Card, CardContent } from "../ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
-import { MoreHorizontal, Download, Trash, FolderOpen } from "lucide-react"
+import { MoreHorizontal, Download, Trash } from "lucide-react"
 import { useToast } from "../ui/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow"
-import { ApiClient, PictureDto } from "../../api/client"
+import { PictureDto } from "../../api/client"
 import { useApiClient } from "../../contexts/ApiClientContext"
 // async function downloadFile(url: string, fileName: string) {
 //   try {
@@ -117,12 +117,12 @@ export function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
   //   }
   // }
 
-  const handleMoveToAlbum = (photo: PictureDto) => {
-    toast({
-      title: "Photo moved",
-      description: `${photo.name} has been moved to a different album.`,
-    })
-  }
+  // const handleMoveToAlbum = (photo: PictureDto) => {
+  //   toast({
+  //     title: "Photo moved",
+  //     description: `${photo.name} has been moved to a different album.`,
+  //   })
+  // }
 
   return (
     <>

@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { useApiClient } from "../contexts/ApiClientContext";
-import { uploadFileToS3 } from "../services/UploadToS3";
 
-interface FileParameter {
-  data: Blob;
-  fileName: string;
-}
+// interface FileParameter {
+//   data: Blob;
+//   fileName: string;
+// }
 
 const Upload = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [tags, setTags] = useState<string>(''); // Tags as a comma-separated string
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [tags, setTags] = useState<string>(''); // Tags as a comma-separated string
+  // const [uploading, setUploading] = useState<boolean>(false);
+  // const [error, setError] = useState<string | null>(null);
   const token = "Bearer " + localStorage.getItem('token')
 
   const apiClient = useApiClient();
@@ -25,9 +24,9 @@ const Upload = () => {
   };
 
   
-  const handleTagsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTags(event.target.value);
-};
+//   const handleTagsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     setTags(event.target.value);
+// };
 
 
   const handleUpload = async () => {
@@ -52,34 +51,34 @@ const Upload = () => {
     
   };
 
-  const handleSubmit = async () => {
-    if (!file) {
-        setError('Please select a file to upload');
-        return;
-    }
+//   const handleSubmit = async () => {
+//     if (!file) {
+//         setError('Please select a file to upload');
+//         return;
+//     }
 
-    setUploading(true);
-    setError(null);
+//     setUploading(true);
+//     setError(null);
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('tags', tags);  // Append the tags here
+//     const formData = new FormData();
+//     formData.append('file', file);
+//     formData.append('tags', tags);  // Append the tags here
 
-    const fileParameter: FileParameter = {
-      data: file,
-      fileName: file.name,
-    };
+//     const fileParameter: FileParameter = {
+//       data: file,
+//       fileName: file.name,
+//     };
     
-    try {
+//     try {
 
-        const response = await apiClient.uploadFile(token, fileParameter)
-        console.log(response);  // Handle success
-    } catch (err) {
-        setError('Error uploading the file');
-    } finally {
-        setUploading(false);
-    }
-};
+//         const response = await apiClient.uploadFile(token, fileParameter)
+//         console.log(response);  // Handle success
+//     } catch (err) {
+//         setError('Error uploading the file');
+//     } finally {
+//         setUploading(false);
+//     }
+// };
 
   return (
     <div className="flex flex-col gap-4 p-4 max-w-md mx-auto">

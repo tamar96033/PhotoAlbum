@@ -2,12 +2,12 @@ import { Link } from "react-router-dom"
 import { Card, CardContent } from "../ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
-import { MoreHorizontal, Edit, Trash, FolderOpen } from "lucide-react"
+import { MoreHorizontal, Trash, FolderOpen } from "lucide-react"
 import { useToast } from "../ui/use-toast"
 // import { formatDistanceToNow } from "date-fns"
 import { Album } from "../../api/client"
 import { useApiClient } from "../../contexts/ApiClientContext"
-import placeholder from '@/assets/placeholder.svg';
+import placeholder from '@/assets/image.png';
 
 // interface Album {
 //   id: string
@@ -27,12 +27,12 @@ export function AlbumGrid({ albums, onAlbumDeleted }: AlbumGridProps) {
     const apiClient = useApiClient()
     const token = "Bearer " + localStorage.getItem('token')
 
-    const handleRename = (album: Album) => {
-        toast({
-            title: "Album renamed",
-            description: `${album.title} has been renamed.`,
-        })
-    }
+    // const handleRename = (album: Album) => {
+    //     toast({
+    //         title: "Album renamed",
+    //         description: `${album.title} has been renamed.`,
+    //     })
+    // }
 
     const handleDelete = async (album: Album) => {
         try {
