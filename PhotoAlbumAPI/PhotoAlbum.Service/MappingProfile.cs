@@ -22,6 +22,10 @@ namespace PhotoAlbum.Service
             CreateMap<Picture, PictureDto>();
 
             CreateMap<Tag, TagDto>().ReverseMap();
+
+            CreateMap<Picture, PictureDto>()
+    .ForMember(dest => dest.AlbumTitle, opt => opt.MapFrom(src => src.Album != null ? src.Album.Title : null));
+    //.ForMember(dest => dest.AlbumUpdatedAt, opt => opt.MapFrom(src => src.Album != null ? src.Album.UpdatedAt : (DateTime?)null));
         }
     }
-}
+}   

@@ -302,5 +302,28 @@ namespace PhotoAlbum.API.Controllers
             await _pictureService.AddPictureAsync(picture);
             return Ok(picture);
         }
+
+
+
+        [HttpGet("presigned-url")]
+        [Authorize]
+        [ProducesResponseType(typeof(object), 200)]  
+        [ProducesResponseType(typeof(string), 400)]
+        public IActionResult GetPresignedUrl([FromQuery] string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                return BadRequest("Missing object key.");
+
+            var request = new GetPreSignedUrlRequest
+            {
+                BucketName = "photo-alum-tamar-testpnoren",
+                Key = key,
+                Expires = DateTime.UtcNow.AddMinutes(15),
+                Verb = HttpVerb.GET
+            };
+
+            var url = _s3Client.GetPreSignedURL(request);
+            return Ok(new { url });
+        }
     }
 }

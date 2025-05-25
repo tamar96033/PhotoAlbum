@@ -29,5 +29,7 @@ namespace PhotoAlbum.Core.IRepositories
         Task<bool> RemoveTagFromPictureAsync(int pictureId, string tagName);
         Task<IEnumerable<Picture>> GetPicturesByUserIdAsync(int userId);
         Task<IEnumerable<PictureDto>> GetPicturesByTagAndUserIdAsync(int tagId, int userId);
+
+        Task<List<Picture>> GetPicturesByAlbumIdAsync(int albumId);
     }
 }

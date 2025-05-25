@@ -1,4 +1,5 @@
-﻿using PhotoAlbum.Core.Entities;
+﻿using PhotoAlbum.Core.Dto;
+using PhotoAlbum.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,12 @@ namespace PhotoAlbum.Core.IServices
     {
         //the signatures of the services.
         Task<IEnumerable<Album>?> GetAlbumsAsync();
-        Task<Album?> GetAlbumAsync(int id);
+        Task<AlbumDto?> GetAlbumAsync(int id);
         Task<bool> AddAlbumAsync(Album album);
         Task<bool> UpdateAlbumAsync(int id, Album album);
         Task<bool> DeleteAlbumAsync(int id);
-        Task<IEnumerable<Album>> GetAlbumsByUserIdAsync(int userId);
+        Task<IEnumerable<AlbumDto>> GetAlbumsByUserIdAsync(int userId);
+        Task<byte[]> GetAlbumZipAsync(int albumId);
+
     }
 }

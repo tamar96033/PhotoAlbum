@@ -131,5 +131,11 @@ namespace PhotoAlbum.Data.Repositories
 
             return users;
         }
+
+        public User? GetUserById(int id)
+        {
+            // דוגמה פשוטה
+            return _context.Users.FirstOrDefault(u => u.Id == id);
+        }
     }
 }

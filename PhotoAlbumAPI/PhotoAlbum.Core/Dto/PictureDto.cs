@@ -15,6 +15,10 @@ namespace PhotoAlbum.Core.Dto
         public int UserId { get; set; }
         public string Url { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+
+        public string? AlbumTitle { get; set; }
         //for gemini
         public string Base64ImageData { get; set; } = "";
 

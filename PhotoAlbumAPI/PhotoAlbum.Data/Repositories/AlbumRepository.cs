@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PhotoAlbum.Core.Dto;
 using PhotoAlbum.Core.Entities;
 using PhotoAlbum.Core.IRepositories;
 using System;
@@ -41,24 +42,36 @@ namespace PhotoAlbum.Data.Repositories
             }
         }
 
-        public async Task<Album?> GetAlbumAsync(int id)
+        public async Task<AlbumDto?> GetAlbumAsync(int id)
         {
-            try
+            var album = await _context.Albums
+                        .Include(a => a.Pictures)
+                        .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (album == null)
+                return null;
+
+            var albumDto = new AlbumDto
             {
-                return await _context.Albums.FindAsync(id);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                // Handle database update exceptions
-                _logger.LogError($"An error occurred while accessing the database.: {dbEx}");
-                throw;
-            }
-            catch (Exception ex)
-            {
-                // Handle other exceptions
-                _logger.LogError($"An unexpected error occurred. {ex}");
-                throw;
-            }
+                Id = album.Id,
+                Title = album.Title,
+                Description = album.Description,
+                CreatedAt = album.CreatedAt,
+                UpdatedAt = album.UpdatedAt,
+                Pictures = album.Pictures.Select(p => new PictureDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    UserId = p.UserId,
+                    Url = p.Url,
+                    CreatedAt = p.CreatedAt,
+                    UpdatedAt = p.UpdatedAt,
+                    AlbumTitle = album.Title,
+                    Base64ImageData = p.Base64ImageData ?? ""
+                }).ToList()
+            };
+
+            return albumDto;
             //try
             //{
             //    var album = await _context.Albums.FirstOrDefaultAsync(x => x.Id == id);
@@ -158,11 +171,38 @@ namespace PhotoAlbum.Data.Repositories
             await _context.Albums.FirstOrDefaultAsync(a => a.Title == title);
 
 
-        public async Task<IEnumerable<Album>> GetAlbumsByUserIdAsync(int userId)
+        public async Task<IEnumerable<AlbumDto>> GetAlbumsByUserIdAsync(int userId)
         {
-            return await _context.Albums
-                .Where(a => a.UserId == userId)
-                .ToListAsync();
+            //return await _context.Albums
+            //    .Where(a => a.UserId == userId)
+            //    .Include(a => a.Pictures)
+            //    .ToListAsync();
+            var albums = await _context.Albums
+                  .Where(a => a.UserId == userId)
+                  .Include(a => a.Pictures)
+                  .ToListAsync();
+
+            var result = albums.Select(album => new AlbumDto
+            {
+                Id = album.Id,
+                Title = album.Title,
+                Description = album.Description,
+                CreatedAt = album.CreatedAt,
+                UpdatedAt = album.UpdatedAt,
+                Pictures = album.Pictures.Select(p => new PictureDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    UserId = p.UserId,
+                    Url = p.Url,
+                    CreatedAt = p.CreatedAt,
+                    UpdatedAt = p.UpdatedAt,
+                    AlbumTitle = album.Title,
+                    Base64ImageData = ""
+                }).ToList()
+            });
+
+            return result;
         }
     }
 }
