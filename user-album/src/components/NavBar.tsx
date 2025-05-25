@@ -1,6 +1,4 @@
-import { AppBar, Toolbar, Button, Box } from "@mui/material";
-import { Link } from "react-router-dom";
-import ProfileMenu from "./ProfileMenu";
+import { AppBar } from "@mui/material";
 
 const NavBar = () => {
     return (

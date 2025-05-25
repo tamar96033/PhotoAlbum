@@ -61,7 +61,7 @@ const UploadFolder = () => {
     <div>
       <input
         type="file"
-        webkitdirectory="true"
+        // webkitdirectory="true"
         multiple
         onChange={handleFileChange}
       />

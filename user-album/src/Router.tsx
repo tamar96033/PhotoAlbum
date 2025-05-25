@@ -5,7 +5,6 @@ import AlbumsPage from "./pages/AlbumsPage";
 import TagsPage from "./pages/TagsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import GaleryPage from "./pages/GaleryPage";
-import AlbumDetails from "./components/albums2/AlbumDetails";
 import LandingPage from "./pages/LandingPage";
 import RegisterPage from "./pages/RegisterPage";
 

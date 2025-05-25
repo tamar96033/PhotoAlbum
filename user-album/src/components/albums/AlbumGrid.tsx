@@ -2,11 +2,12 @@ import { Link } from "react-router-dom"
 import { Card, CardContent } from "../ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
-import { MoreHorizontal, Edit, Trash, FolderOpen } from "lucide-react"
+import { MoreHorizontal, Trash, FolderOpen } from "lucide-react"
 import { useToast } from "../ui/use-toast"
 // import { formatDistanceToNow } from "date-fns"
 import { Album } from "../../api/client"
 import { useApiClient } from "../../contexts/ApiClientContext"
+import placeholder from '@/assets/image.png';
 
 // interface Album {
 //   id: string
@@ -26,12 +27,12 @@ export function AlbumGrid({ albums, onAlbumDeleted }: AlbumGridProps) {
     const apiClient = useApiClient()
     const token = "Bearer " + localStorage.getItem('token')
 
-    const handleRename = (album: Album) => {
-        toast({
-            title: "Album renamed",
-            description: `${album.title} has been renamed.`,
-        })
-    }
+    // const handleRename = (album: Album) => {
+    //     toast({
+    //         title: "Album renamed",
+    //         description: `${album.title} has been renamed.`,
+    //     })
+    // }
 
     const handleDelete = async (album: Album) => {
         try {
@@ -55,7 +56,7 @@ export function AlbumGrid({ albums, onAlbumDeleted }: AlbumGridProps) {
                         <Link to={`/dashboard/albums/${album.id}`}>
                             <div className="relative aspect-video overflow-hidden">
                                 <img
-                                    src={"/placeholder.svg"}//album.coverImage ||album.pictures?[0].url ||
+                                    src={album.pictures?.[0]?.url || placeholder}
                                     alt={album.title}
                                     className="object-cover w-full h-full transition-all hover:scale-105"
                                 />
@@ -83,10 +84,10 @@ export function AlbumGrid({ albums, onAlbumDeleted }: AlbumGridProps) {
                                             Open Album
                                         </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleRename(album)}>
+                                    {/* <DropdownMenuItem onClick={() => handleRename(album)}>
                                         <Edit className="mr-2 h-4 w-4" />
                                         Rename
-                                    </DropdownMenuItem>
+                                    </DropdownMenuItem> */}
                                     <DropdownMenuItem onClick={() => handleDelete(album)} className="text-red-500 focus:text-red-500">
                                         <Trash className="mr-2 h-4 w-4" />
                                         Delete

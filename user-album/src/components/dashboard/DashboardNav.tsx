@@ -2,7 +2,7 @@ import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "../../lib/utils"
 import { Button } from "../ui/button"
-import { Home, ImageIcon, FolderOpen, Tag, Upload, Settings, LogOut } from "lucide-react"
+import { Home, ImageIcon, FolderOpen, Upload, LogOut } from "lucide-react"
 
 interface NavItem {
   title: string

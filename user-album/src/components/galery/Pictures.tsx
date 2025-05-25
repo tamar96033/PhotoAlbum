@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react"
-import { Picture } from "../../api/client"
-import { useApiClient } from "../../contexts/ApiClientContext";
+
 import ShowPicture from "./ShowPicture";
 
 const Pictures = ({urls}: {urls: string[]}) => {

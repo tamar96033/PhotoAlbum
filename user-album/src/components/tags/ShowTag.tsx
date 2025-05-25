@@ -1,5 +1,4 @@
 import { useState } from "react";
-import PicturesToTag from "./PicturesToTag";
 
 const ShowTag = ({tag}: {tag:string}) => {
 
@@ -11,7 +10,7 @@ const ShowTag = ({tag}: {tag:string}) => {
 
     return(<>
     <button onClick={handleClick}>{tag}</button>
-    {flag && <PicturesToTag/>}
+    {/* {flag && <PicturesToTag/>} */}
     </>)
 }
 

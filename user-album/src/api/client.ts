@@ -58,6 +58,12 @@ export interface IApiClient {
     createAlbum(authorization: string | undefined, body: Album | undefined): Promise<Album>;
 
     /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    downloadZip(albumId: number, authorization: string | undefined): Promise<FileResponse>;
+
+    /**
      * @param body (optional) 
      * @return OK
      */
@@ -207,6 +213,13 @@ export interface IApiClient {
     upload(name: string | undefined, url: string | undefined, authorization: string | undefined): Promise<void>;
 
     /**
+     * @param key (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    presignedUrl(key: string | undefined, authorization: string | undefined): Promise<any>;
+
+    /**
      * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
@@ -217,6 +230,12 @@ export interface IApiClient {
      * @return OK
      */
     usersWithPictures(authorization: string | undefined): Promise<UserWithPictureDto[]>;
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    getUserByToken(authorization: string | undefined): Promise<User>;
 }
 
 export class ApiClient implements IApiClient {
@@ -621,6 +640,59 @@ export class ApiClient implements IApiClient {
             });
         }
         return Promise.resolve<Album>(null as any);
+    }
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    downloadZip(albumId: number, authorization: string | undefined): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/api/Album/{albumId}/download-zip";
+        if (albumId === undefined || albumId === null)
+            throw new Error("The parameter 'albumId' must be defined.");
+        url_ = url_.replace("{albumId}", encodeURIComponent("" + albumId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDownloadZip(_response);
+        });
+    }
+
+    protected processDownloadZip(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
     }
 
     /**
@@ -1895,6 +1967,59 @@ export class ApiClient implements IApiClient {
     }
 
     /**
+     * @param key (optional) 
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    presignedUrl(key: string | undefined, authorization: string | undefined): Promise<any> {
+        let url_ = this.baseUrl + "/api/Upload/presigned-url?";
+        if (key === null)
+            throw new Error("The parameter 'key' cannot be null.");
+        else if (key !== undefined)
+            url_ += "key=" + encodeURIComponent("" + key) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processPresignedUrl(_response);
+        });
+    }
+
+    protected processPresignedUrl(response: Response): Promise<any> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result400 = resultData400 !== undefined ? resultData400 : <any>null;
+    
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<any>(null as any);
+    }
+
+    /**
      * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
      * @return OK
      */
@@ -1984,6 +2109,53 @@ export class ApiClient implements IApiClient {
             });
         }
         return Promise.resolve<UserWithPictureDto[]>(null as any);
+    }
+
+    /**
+     * @param authorization (optional) Bearer token (לדוגמא: Bearer eyJhbGciOiJIUzI1NiIsInR...)
+     * @return OK
+     */
+    getUserByToken(authorization: string | undefined): Promise<User> {
+        let url_ = this.baseUrl + "/api/User/get-user-by-token";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetUserByToken(_response);
+        });
+    }
+
+    protected processGetUserByToken(response: Response): Promise<User> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = User.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result400 = resultData400 !== undefined ? resultData400 : <any>null;
+    
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<User>(null as any);
     }
 }
 
@@ -2191,6 +2363,9 @@ export class PictureDto implements IPictureDto {
     name?: string | undefined;
     userId?: number;
     url?: string | undefined;
+    createdAt?: Date;
+    updatedAt?: Date;
+    albumTitle?: string | undefined;
     base64ImageData?: string | undefined;
 
     constructor(data?: IPictureDto) {
@@ -2208,6 +2383,9 @@ export class PictureDto implements IPictureDto {
             this.name = _data["name"];
             this.userId = _data["userId"];
             this.url = _data["url"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : <any>undefined;
+            this.albumTitle = _data["albumTitle"];
             this.base64ImageData = _data["base64ImageData"];
         }
     }
@@ -2225,6 +2403,9 @@ export class PictureDto implements IPictureDto {
         data["name"] = this.name;
         data["userId"] = this.userId;
         data["url"] = this.url;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : <any>undefined;
+        data["albumTitle"] = this.albumTitle;
         data["base64ImageData"] = this.base64ImageData;
         return data;
     }
@@ -2235,6 +2416,9 @@ export interface IPictureDto {
     name?: string | undefined;
     userId?: number;
     url?: string | undefined;
+    createdAt?: Date;
+    updatedAt?: Date;
+    albumTitle?: string | undefined;
     base64ImageData?: string | undefined;
 }
 
@@ -2873,6 +3057,13 @@ export interface IValidationProblemDetails {
 export interface FileParameter {
     data: any;
     fileName: string;
+}
+
+export interface FileResponse {
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
 }
 
 export class SwaggerException extends Error {
