@@ -79,7 +79,7 @@ namespace PhotoAlbum.Service.Services
             // 1. בניית רשימת שמות האלבומים
             var albums = await _albumRepository.GetAlbumsByUserIdAsync(id);
             var titles = albums?.Select(a => $"'{a.Title}'") ?? Enumerable.Empty<string>();
-            var prompt = $"הבן את התמונה המצורפת וכתוב רק את שם האלבום המתאים ביותר מתוך הרשימה הבאה: {string.Join(", ", titles)}. תן את התשובה כפי שהיא ללא מילים נוספות. אם זה לא מתאים לשום ערך תתן את הערך 'others";
+            var prompt = $"הבן את התמונה המצורפת וכתוב רק את שם האלבום המתאים ביותר מתוך הרשימה הבאה: {string.Join(", ", titles)}. תן את התשובה כפי שהיא ללא מילים נוספות. אם זה לא מתאים לשום ערך תתן את הערך others";
 
             // 2. קריאה ל‑Gemini
             //var requestBody = new { /* … כמו קודם … */ };
