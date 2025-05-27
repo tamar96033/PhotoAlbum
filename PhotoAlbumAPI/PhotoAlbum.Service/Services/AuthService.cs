@@ -100,13 +100,13 @@ namespace PhotoAlbum.Service.Services
             }
 
             // Create security key for signing the JWT
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT__Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT_Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             // Create the JWT token
             var token = new JwtSecurityToken(
-                issuer: _configuration["JWT__Issuer"],
-                audience: _configuration["JWT__Audience"],
+                issuer: _configuration["JWT_Issuer"],
+                audience: _configuration["JWT_Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: credentials

@@ -183,7 +183,7 @@ builder.Services.AddDbContext<DataContext>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-var jwtKey = builder.Configuration["JWT__Key"];
+var jwtKey = builder.Configuration["JWT_Key"];
 if (string.IsNullOrEmpty(jwtKey))
 {
     Console.WriteLine("JWT__Key is missing from configuration");
@@ -202,9 +202,9 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JWT__Issuer"],//["JWT:Issuer"],
-            ValidAudience = builder.Configuration["JWT__Audience"],//["JWT:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT__Key"]))//"JWT:Key"
+            ValidIssuer = builder.Configuration["JWT_Issuer"],//["JWT:Issuer"],
+            ValidAudience = builder.Configuration["JWT_Audience"],//["JWT:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT_Key"]))//"JWT:Key"
         };
     });
 
