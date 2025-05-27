@@ -183,6 +183,12 @@ builder.Services.AddDbContext<DataContext>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+var jwtKey = builder.Configuration["JWT__Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    Console.WriteLine("JWT__Key is missing from configuration");
+}
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
