@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile("secret.json", optional: true, reloadOnChange: true) // Add secret.json
+    //.AddJsonFile("secret.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
 //for the upload controller
@@ -42,9 +42,9 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
     var configuration = builder.Configuration;
 
-    var awsAccessKey = configuration["AWS:AWS_ACCESS_KEY_ID"];
-    var awsSecretKey = configuration["AWS:AWS_SECRET_ACCESS_KEY"];
-    var region = configuration["AWS:Region"] ?? "us-east-1";
+    var awsAccessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");//configuration["AWS:AWS_ACCESS_KEY_ID"];
+    var awsSecretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"); //configuration["AWS:AWS_SECRET_ACCESS_KEY"];
+    var region = Environment.GetEnvironmentVariable("Region") ?? "us-east-1";//configuration["AWS:Region"] ?? "us-east-1";
 
     var config = new AmazonS3Config
     {
@@ -196,9 +196,9 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JWT:Issuer"],
-            ValidAudience = builder.Configuration["JWT:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+            ValidIssuer = builder.Configuration["JWT__Issuer"],//["JWT:Issuer"],
+            ValidAudience = builder.Configuration["JWT__Audience"],//["JWT:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT__Key"]))//"JWT:Key"
         };
     });
 

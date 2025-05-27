@@ -1,4 +1,5 @@
 ﻿using Amazon.S3;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PhotoAlbum.Core.Dto;
 using PhotoAlbum.Core.Entities;
@@ -21,15 +22,19 @@ namespace PhotoAlbum.Service.Services
         private readonly ILogger<AlbumService> _logger;
         private readonly IPictureRepository _pictureRepository;
         private readonly IAmazonS3 _s3Client;
-        private readonly string _bucketName = "photo-alum-tamar-testpnoren";
+        private readonly IConfiguration _configuration;
+        private readonly string _bucketName;
 
-        public AlbumService(IAlbumRepository albumRepository, ILogger<AlbumService> logger, IRepositoryManager repositoryManager, IPictureRepository pictureRepository, IAmazonS3 amazonS3)
+        public AlbumService(IAlbumRepository albumRepository, ILogger<AlbumService> logger, IRepositoryManager repositoryManager, IPictureRepository pictureRepository, IAmazonS3 amazonS3, IConfiguration configuration)
         {
             _albumRepository = albumRepository;
             _logger = logger;
             _repositoryManager = repositoryManager;
             _pictureRepository = pictureRepository;
             _s3Client = amazonS3;
+            _configuration = configuration;
+
+            _bucketName = _configuration["BucketName"];
         }
 
 

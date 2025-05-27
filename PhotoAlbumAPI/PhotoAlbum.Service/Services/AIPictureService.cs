@@ -104,7 +104,7 @@ namespace PhotoAlbum.Service.Services
                 };
             var json = JsonSerializer.Serialize(requestBody);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var apiKey = _configuration["Gemini:ApiKey"];
+            var apiKey = _configuration["GEMINI_API_KEY"];
 
             var geminiResp = await _httpClient.PostAsync(
                 $"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={apiKey}",

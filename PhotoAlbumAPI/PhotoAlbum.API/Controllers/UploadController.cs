@@ -59,7 +59,7 @@ namespace PhotoAlbum.API.Controllers
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             Console.WriteLine(fileName);
 
-            var bucketName = _configuration["AWS:BucketName"];
+            var bucketName = _configuration["BucketName"];
 
             // Convert the image to Base64
             var base64Image = await ConvertImageToBase64Async(file);
@@ -212,7 +212,7 @@ namespace PhotoAlbum.API.Controllers
             if (files == null || !files.Any())
                 return BadRequest("No files uploaded.");
 
-            var bucketName = _configuration["AWS:BucketName"];
+            var bucketName = _configuration["BucketName"];
             var results = new List<object>();
 
             foreach (var file in files)
@@ -316,7 +316,7 @@ namespace PhotoAlbum.API.Controllers
 
             var request = new GetPreSignedUrlRequest
             {
-                BucketName = "photo-alum-tamar-testpnoren",
+                BucketName = _configuration["BucketName"],
                 Key = key,
                 Expires = DateTime.UtcNow.AddMinutes(15),
                 Verb = HttpVerb.GET

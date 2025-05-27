@@ -18,12 +18,12 @@ namespace PhotoAlbum.Service.Services
 
         public S3Service(IConfiguration configuration)
         {
-            _bucketName = configuration["AWS:BucketName"];
-            var region = Amazon.RegionEndpoint.GetBySystemName(configuration["AWS:Region"]);
+            _bucketName = configuration["BucketName"];
+            var region = Amazon.RegionEndpoint.GetBySystemName(configuration["Region"]);
 
             _s3Client = new AmazonS3Client(
-                configuration["AWS:AWS_ACCESS_KEY_ID"],
-                configuration["AWS:AWS_SECRET_ACCESS_KEY"],
+                configuration["AWS_ACCESS_KEY_ID"],
+                configuration["AWS_SECRET_ACCESS_KEY"],
                  //new AmazonS3Config { RegionEndpoint = region }
                  new AmazonS3Config
                  {
