@@ -250,7 +250,7 @@ namespace PhotoAlbum.API.Controllers
                 };
 
                 var classifyResult = await _aIPictureService.AnalyzeImageAsync(picture, int.Parse(userId));
-                await _pictureService.AddPictureAsync(picture);
+                //await _pictureService.AddPictureAsync(picture);
 
                 results.Add(classifyResult);
             }
