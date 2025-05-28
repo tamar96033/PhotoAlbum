@@ -228,26 +228,64 @@ builder.Services.AddAuthorization(options =>
 //              .AllowCredentials();
 //    });
 //});
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        var origins = new[] {
-            "https://photoalbumclient.onrender.com"
+        var origins = new List<string>
+        {
+            "https://photoalbumclient.onrender.com",
+            "https://photoalbumadmin.onrender.com"  // Add your admin app URL here
         };
 
-        // Add localhost only in development
+        // Add localhost origins for development
         if (builder.Environment.IsDevelopment())
         {
-            origins = origins.Concat(new[] { "http://localhost:5173", "http://localhost:4200", "https://photoalbumclient.onrender.com", "https://photoalbumadmin.onrender.com" }).ToArray();
+            origins.AddRange(new[]
+            {
+                "http://localhost:5173",  // React dev server
+                "http://localhost:4200",  // Angular dev server
+                "http://localhost:3000"   // Common React port
+            });
         }
 
-        policy.WithOrigins(origins)
+        policy.WithOrigins(origins.ToArray())
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowCredentials()
+              .SetIsOriginAllowed(origin =>
+              {
+                  // Log the origin for debugging
+                  Console.WriteLine($"CORS check for origin: {origin}");
+                  return origins.Contains(origin) ||
+                         (builder.Environment.IsDevelopment() &&
+                          (origin?.StartsWith("http://localhost:") == true ||
+                           origin?.StartsWith("https://localhost:") == true));
+              });
     });
 });
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend", policy =>
+//    {
+//        var origins = new[] {
+//            "https://photoalbumclient.onrender.com"
+//        };
+
+//        // Add localhost only in development
+//        if (builder.Environment.IsDevelopment())
+//        {
+//            origins = origins.Concat(new[] { "http://localhost:5173", "http://localhost:4200", "https://photoalbumclient.onrender.com", "https://photoalbumadmin.onrender.com" }).ToArray();
+//        }
+
+//        policy.WithOrigins(origins)
+//              .AllowAnyHeader()
+//              .AllowAnyMethod()
+//              .AllowCredentials();
+//    });
+//});
 
 
 var app = builder.Build();
