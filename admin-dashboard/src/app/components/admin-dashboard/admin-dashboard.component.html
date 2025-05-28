@@ -1,0 +1,51 @@
+    <mat-toolbar color="primary" class="toolbar">
+      <div class="toolbar-content">
+        <div class="toolbar-left">
+          <mat-icon class="toolbar-icon">photo_camera</mat-icon>
+          <span class="toolbar-title">Photo Album Admin</span>
+        </div>
+        <button mat-stroked-button (click)="onLogout()" class="logout-button">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+      </div>
+    </mat-toolbar>
+
+    <div class="dashboard-container">
+      <mat-tab-group class="dashboard-tabs" animationDuration="300ms">
+        <!-- <mat-tab label="Overview">
+          <div class="tab-content">
+            <div class="stats-grid">
+              @for (stat of stats; track stat.title) {
+                <mat-card class="stat-card">
+                  <mat-card-content>
+                    <div class="stat-content">
+                      <div class="stat-info">
+                        <h3 class="stat-title">{{ stat.title }}</h3>
+                        <p class="stat-value">{{ stat.value }}</p>
+                        <p class="stat-change">{{ stat.change }}</p>
+                      </div>
+                      <div class="stat-icon" [style.background-color]="stat.color">
+                        <mat-icon>{{ stat.icon }}</mat-icon>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              }
+            </div>
+          </div>
+        </mat-tab> -->
+        
+        <mat-tab label="Users">
+          <div class="tab-content">
+            <app-users-list></app-users-list>
+          </div>
+        </mat-tab>
+        
+        <mat-tab label="Analytics">
+          <div class="tab-content">
+            <app-analytics-charts></app-analytics-charts>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
