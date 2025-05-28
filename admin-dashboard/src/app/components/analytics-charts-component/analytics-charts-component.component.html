@@ -1,0 +1,56 @@
+    <mat-grid-list cols="2" rowHeight="400px" gutterSize="24px" class="charts-grid">
+      <mat-grid-tile>
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Monthly Photo Uploads</mat-card-title>
+            <mat-card-subtitle>Number of photos uploaded each month</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <canvas #uploadsChart width="400" height="250"></canvas>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+      
+      <!-- <mat-grid-tile>
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>User Growth</mat-card-title>
+            <mat-card-subtitle>New user registrations over time</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <canvas #userGrowthChart width="400" height="250"></canvas>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile> -->
+      
+      <!-- <mat-grid-tile>
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Storage Usage Distribution</mat-card-title>
+            <mat-card-subtitle>Breakdown of storage usage by file type</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content class="pie-chart-content">
+            <canvas #storageChart width="300" height="300"></canvas>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile> -->
+      
+      <mat-grid-tile>
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Activity Summary</mat-card-title>
+            <mat-card-subtitle>Key metrics and statistics</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metrics-list">
+              @for (metric of activityMetrics(); track metric.label) {
+                <div class="metric-item">
+                  <span class="metric-label">{{ metric.label }}</span>
+                  <span class="metric-value">{{ metric.value }}</span>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+    </mat-grid-list>

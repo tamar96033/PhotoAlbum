@@ -15,7 +15,7 @@ export async function getPresignedUploadUrl(fileName: string, contentType: strin
 /**
  * Uploads a file to S3 using a presigned URL
  */
-export async function uploadFileWithPresignedUrl(presignedUrl: string, file: File): Promise<boolean> {
+export async function uploadFileWithPresignedUrl(presignedUrl: string): Promise<boolean> {
   try {
     // In a real implementation, this would use fetch to PUT the file to the presigned URL
     console.log(`Uploading file to ${presignedUrl}`)

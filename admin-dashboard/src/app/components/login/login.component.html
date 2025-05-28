@@ -1,40 +1,73 @@
-<!-- I have to add treat in the errors -->
+ <div class="login-container">
+      <div class="login-content">
+        <!-- Header -->
+        <div class="login-header">
+          <div class="logo">
+            <mat-icon class="logo-icon">photo_camera</mat-icon>
+          </div>
+          <h1 class="app-title">Photo Album Admin</h1>
+          <p class="app-subtitle">Sign in to manage your photo collections</p>
+        </div>
 
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Name</mat-label>
-      <input matInput formControlName="name" />
-    </mat-form-field>
-  
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" />
-      @if(loginForm.get('password')?.invalid && loginForm.get('password')?.touched)
-      {<mat-error>
-        Password is required.
-      </mat-error>}
-    </mat-form-field>
-  
-    <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
-      Login
-    </button>
-  </form>
-<!-- <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <div>
-        <label>name</label>
-        <input type="text" formControlName="name" />
+        <!-- Login Form -->
+        <mat-card class="login-card">
+          <mat-card-content>
+            <form (ngSubmit)="onSubmit()" class="login-form">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Name</mat-label>
+                <input matInput 
+                       type="text" 
+                       [(ngModel)]="name" 
+                       name="name" 
+                       placeholder="Enter your name"
+                       required>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Password</mat-label>
+                <input matInput 
+                       [type]="hidePassword ? 'password' : 'text'" 
+                       [(ngModel)]="password" 
+                       name="password" 
+                       placeholder="Enter your password"
+                       required>
+                <button mat-icon-button 
+                        matSuffix 
+                        (click)="hidePassword = !hidePassword" 
+                        type="button"
+                        class="password-toggle">
+                  <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
+              
+              <button mat-raised-button 
+                      color="primary" 
+                      type="submit" 
+                      class="login-button"
+                      [disabled]="loading()">
+                @if (loading()) {
+                  <mat-spinner diameter="20" class="spinner"></mat-spinner>
+                  Signing in...
+                } @else {
+                  Sign In
+                }
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Demo Info -->
+        <!-- <div class="demo-info">
+          <div class="demo-card">
+            <div class="demo-header">
+              <mat-icon class="demo-icon">info_outline</mat-icon>
+              <span>Demo Credentials</span>
+            </div>
+            <div class="demo-details">
+              <p><strong>Email:</strong> adminphotoalbum.com    -----    I think that is not must</p>
+              <p><strong>Password:</strong> admin123</p>
+            </div>
+          </div>
+        </div> -->
+      </div>
     </div>
-
-    <div>
-        <label>Password</label>
-        <input type="password" formControlName="password" />
-        @if(loginForm.get('password')?.invalid && loginForm.get('password')?.touched){
-        <div>
-            Password is required.
-        </div>            
-        }
-
-    </div>
-
-    <button type="submit" [disabled]="loginForm.invalid">Login</button>
-</form> -->

@@ -135,6 +135,7 @@ namespace PhotoAlbum.Data.Repositories
             return await _context.Pictures
                 .Include(p => p.PictureTags)
                     .ThenInclude(pt => pt.Tag)
+                    .Include(p => p.Album)
                 .Where(p => p.UserId == userId)
                 .ToListAsync();
         }
@@ -184,6 +185,13 @@ namespace PhotoAlbum.Data.Repositories
         //.ToList()
             }).ToList();
             return pictureDtos;
+        }
+
+        public async Task<List<Picture>> GetPicturesByAlbumIdAsync(int albumId)
+        {
+            return await _context.Pictures
+                .Where(p => p.AlbumId == albumId)
+                .ToListAsync();
         }
     }
 }

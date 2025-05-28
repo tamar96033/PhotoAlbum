@@ -50,18 +50,14 @@ export function AlbumDetails({ album, photos }: AlbumDetailsProps) {
   const apiClient = useApiClient();
   const token = "Bearer " + localStorage.getItem('token')
 
-  // const handleRename = () => {
-  //   toast({
-  //     title: "Album renamed",
-  //     description: `${album?.title} has been renamed.`,
-  //   })
-  // }
-
-  const handleDelete = () => {
+  const handleDelete = async () => {
     toast({
       title: "Album deleted",
       description: `${album?.title} has been deleted.`,
     })
+    const response = await apiClient.deleteAlbumById(album?.id ?? 0, token)
+    console.log(response);
+    
     navigate("/dashboard/albums")
   }
 
@@ -89,6 +85,17 @@ export function AlbumDetails({ album, photos }: AlbumDetailsProps) {
     }
   }
 
+
+  const handleDeletePhoto = async (photo: PictureDto) => {
+    try {
+      await apiClient.pictureDELETE(photo.id ?? 0, token);
+      // await fetchPhotos(); // Refresh the photo list
+    } catch (error) {
+      console.error("Delete failed", error);
+    }
+  }
+
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -152,7 +159,7 @@ export function AlbumDetails({ album, photos }: AlbumDetailsProps) {
         {/* {album.photoCount} photos • Created {new Date(album.createdAt).toLocaleDateString()} */}
       </div>
 
-      <PhotoGrid photos={photos} onDelete={()=>{handleDelete()}}/>
+      <PhotoGrid photos={photos} onDelete={()=>{handleDeletePhoto}}/>
     </div>
   )
 }

@@ -27,6 +27,7 @@ namespace PhotoAlbum.API.Controllers
             return Ok(await _userService.GetAllUsersAsync());
         }
 
+
         [HttpGet("users-with-pictures")]
         [Authorize]
         [ProducesResponseType(typeof(List<UserWithPictureDto>), StatusCodes.Status200OK)]
@@ -34,6 +35,26 @@ namespace PhotoAlbum.API.Controllers
         {
             var result = await _userService.GetAllUsersWithPicturesAsync();
             return Ok(result);
+        }
+
+        [HttpGet("get-user-by-token")]
+        [Authorize]
+        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+        public IActionResult GetUserFromToken()
+        {
+            // קורא את ה-Authorization header
+            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+
+            if (string.IsNullOrEmpty(authHeader))
+                return Unauthorized();
+
+            var user = _userService.GetUserFromToken(authHeader);
+
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
         }
     }
 }

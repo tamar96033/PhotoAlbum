@@ -110,10 +110,10 @@ export default function LandingPage() {
             © {new Date().getFullYear()} PhotoCloud. All rights reserved.
           </p>
           <div className="flex gap-4">
-            <Link to="/terms" className="text-sm text-muted-foreground underline underline-offset-4">
+            <Link to="/terms" target="_blank" className="text-sm text-muted-foreground underline underline-offset-4">
               Terms
             </Link>
-            <Link to="/privacy" className="text-sm text-muted-foreground underline underline-offset-4">
+            <Link to="/privacy" target="_blank" className="text-sm text-muted-foreground underline underline-offset-4">
               Privacy
             </Link>
           </div>

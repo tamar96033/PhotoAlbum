@@ -14,10 +14,9 @@
 
 // export default AppLayout;
 
-import React from "react";
 import { ThemeProvider } from "./ThemeProvider";
 import { Toaster } from "./ui/toaster";
-import { Outlet, RouterProvider } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 // import router from "../Router"; // אם יש לך הגדרות ראוטר
 import "../styles/global.css";
 import NavBar from "./NavBar";

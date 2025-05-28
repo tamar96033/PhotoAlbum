@@ -59,7 +59,7 @@ namespace PhotoAlbum.API.Controllers
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             Console.WriteLine(fileName);
 
-            var bucketName = _configuration["AWS:BucketName"];
+            var bucketName = _configuration["BucketName"];
 
             // Convert the image to Base64
             var base64Image = await ConvertImageToBase64Async(file);
@@ -212,7 +212,7 @@ namespace PhotoAlbum.API.Controllers
             if (files == null || !files.Any())
                 return BadRequest("No files uploaded.");
 
-            var bucketName = _configuration["AWS:BucketName"];
+            var bucketName = _configuration["BucketName"];
             var results = new List<object>();
 
             foreach (var file in files)
@@ -250,7 +250,7 @@ namespace PhotoAlbum.API.Controllers
                 };
 
                 var classifyResult = await _aIPictureService.AnalyzeImageAsync(picture, int.Parse(userId));
-                await _pictureService.AddPictureAsync(picture);
+                //await _pictureService.AddPictureAsync(picture);
 
                 results.Add(classifyResult);
             }
@@ -301,6 +301,29 @@ namespace PhotoAlbum.API.Controllers
 
             await _pictureService.AddPictureAsync(picture);
             return Ok(picture);
+        }
+
+
+
+        [HttpGet("presigned-url")]
+        [Authorize]
+        [ProducesResponseType(typeof(object), 200)]  
+        [ProducesResponseType(typeof(string), 400)]
+        public IActionResult GetPresignedUrl([FromQuery] string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                return BadRequest("Missing object key.");
+
+            var request = new GetPreSignedUrlRequest
+            {
+                BucketName = _configuration["BucketName"],
+                Key = key,
+                Expires = DateTime.UtcNow.AddMinutes(15),
+                Verb = HttpVerb.GET
+            };
+
+            var url = _s3Client.GetPreSignedURL(request);
+            return Ok(new { url });
         }
     }
 }

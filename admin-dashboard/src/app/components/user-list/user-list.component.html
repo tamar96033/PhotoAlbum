@@ -1,7 +1,97 @@
-<p>user-list works!</p>
+<!-- <p>user-list works!</p>
 
 <ul>
 @for(user of users; track user.id){
     <li>{{user.name}}</li>
 }
-</ul>
+</ul> -->
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>User Management</mat-card-title>
+        <mat-card-subtitle>Manage users, view their activity, and control access</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search users</mat-label>
+          <input matInput 
+                 [(ngModel)]="searchTerm" 
+                 placeholder="Search by name or email">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        
+        <div class="table-container">
+          <table mat-table [dataSource]="filteredUsers()" class="users-table">
+            <!-- User Column -->
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef>User</th>
+              <td mat-cell *matCellDef="let user">
+                <div class="user-info">
+                  <mat-icon class="user-avatar">account_circle</mat-icon>
+                  <div class="user-details">
+                    <div class="user-name">{{ user.name }}</div>
+                    <div class="user-email">{{ user.email }}</div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let user">
+                <mat-chip [class]="getStatusClass(user.status)">
+                  <!-- {{ user.status | titlecase }} -->
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Photos Column -->
+            <ng-container matColumnDef="photos">
+              <th mat-header-cell *matHeaderCellDef>Photos</th>
+              <td mat-cell *matCellDef="let user">{{ getTotalPictures(user) }}</td>
+            </ng-container>
+
+            <!-- Albums Column -->
+            <ng-container matColumnDef="albums">
+              <th mat-header-cell *matHeaderCellDef>Albums</th>
+              <td mat-cell *matCellDef="let user">{{ user.albums?.length || 0 }}</td>
+            </ng-container>
+
+            <!-- Join Date Column -->
+            <ng-container matColumnDef="joinDate">
+              <th mat-header-cell *matHeaderCellDef>Join Date</th>
+              <td mat-cell *matCellDef="let user">{{ user.createdAt | date: 'dd/MM/yyyy, HH:mm' }}</td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let user">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <!-- <button mat-menu-item (click)="handleUserAction(user.id, 'view')">
+                    <mat-icon>visibility</mat-icon>
+                    <span>View Details</span>
+                  </button>
+                  <button mat-menu-item (click)="handleUserAction(user.id, 'suspend')">
+                    <mat-icon>block</mat-icon>
+                    <span>Suspend User</span>
+                  </button> -->
+                  <button mat-menu-item (click)="handleUserAction(user.id, 'delete')" class="danger-item">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete User</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>

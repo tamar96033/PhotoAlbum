@@ -235,5 +235,23 @@ namespace PhotoAlbum.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+
+
+        [HttpGet("{albumId}/download-zip")]
+        [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DownloadAlbumZip(int albumId)
+        {
+            try
+            {
+                var zipBytes = await _albumService.GetAlbumZipAsync(albumId);
+                return File(zipBytes, "application/zip", $"album-{albumId}.zip");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
     }
 }

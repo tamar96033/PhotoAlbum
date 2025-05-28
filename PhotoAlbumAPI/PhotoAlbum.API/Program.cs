@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile("secret.json", optional: true, reloadOnChange: true) // Add secret.json
+    //.AddJsonFile("secret.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
 //for the upload controller
@@ -42,9 +42,9 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
     var configuration = builder.Configuration;
 
-    var awsAccessKey = configuration["AWS:AWS_ACCESS_KEY_ID"];
-    var awsSecretKey = configuration["AWS:AWS_SECRET_ACCESS_KEY"];
-    var region = configuration["AWS:Region"] ?? "us-east-1";
+    var awsAccessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");//configuration["AWS:AWS_ACCESS_KEY_ID"];
+    var awsSecretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"); //configuration["AWS:AWS_SECRET_ACCESS_KEY"];
+    var region = Environment.GetEnvironmentVariable("Region") ?? "us-east-1";//configuration["AWS:Region"] ?? "us-east-1";
 
     var config = new AmazonS3Config
     {
@@ -183,6 +183,12 @@ builder.Services.AddDbContext<DataContext>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+var jwtKey = builder.Configuration["JWT_Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    Console.WriteLine("JWT__Key is missing from configuration");
+}
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -196,9 +202,9 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JWT:Issuer"],
-            ValidAudience = builder.Configuration["JWT:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+            ValidIssuer = builder.Configuration["JWT_Issuer"],//["JWT:Issuer"],
+            ValidAudience = builder.Configuration["JWT_Audience"],//["JWT:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT_Key"]))//"JWT:Key"
         };
     });
 
@@ -233,7 +239,7 @@ builder.Services.AddCors(options =>
         // Add localhost only in development
         if (builder.Environment.IsDevelopment())
         {
-            origins = origins.Concat(new[] { "http://localhost:5173", "http://localhost:4200" }).ToArray();
+            origins = origins.Concat(new[] { "http://localhost:5173", "http://localhost:4200", "https://photoalbumclient.onrender.com" }).ToArray();
         }
 
         policy.WithOrigins(origins)

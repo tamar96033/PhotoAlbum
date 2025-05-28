@@ -13,6 +13,8 @@ import PhotosPage from "./pages/PhotosPage";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import UploadPage from "./pages/UploadPage";
 import AlbumDetailPage from "./pages/AlbumDetailPage";
+import TermsPage from "./pages/TermPage";
+import PrivacyPage from "./pages/PrivacyPage";
 
 const router = createBrowserRouter([
     {
@@ -21,6 +23,8 @@ const router = createBrowserRouter([
         children:[
             // {path: '', element: <HomePage/>},
             {path: '', element: <LandingPage/>},
+            {path: 'terms', element: <TermsPage/>},
+            {path: 'privacy', element: <PrivacyPage/>},
             {path:'login', element: <LoginPage/>},
             {path:'register', element: <RegisterPage/>},
             {path: 'dashboard/', element: <DashboardLayout/>, children:[

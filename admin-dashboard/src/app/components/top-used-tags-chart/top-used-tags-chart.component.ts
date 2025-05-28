@@ -1,12 +1,12 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { Picture, User, UserWithPictureDto } from '../../services/api-client';
 import { ApiClientService } from '../../services/api-client.service';
-import { AddUserComponent } from "../add-user/add-user.component";
+// import { AddUserComponent } from "../add-user/add-user.component";
 
 
 @Component({
   selector: 'app-top-used-tags-chart',
-  imports: [AddUserComponent],
+  // imports: [AddUserComponent],
   templateUrl: './top-used-tags-chart.component.html',
   styleUrl: './top-used-tags-chart.component.css'
 })

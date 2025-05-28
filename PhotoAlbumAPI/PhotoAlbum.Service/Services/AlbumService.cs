@@ -1,9 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Amazon.S3;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using PhotoAlbum.Core.Dto;
 using PhotoAlbum.Core.Entities;
 using PhotoAlbum.Core.IRepositories;
 using PhotoAlbum.Core.IServices;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
@@ -16,12 +20,21 @@ namespace PhotoAlbum.Service.Services
         private readonly IRepositoryManager _repositoryManager;
         private readonly IAlbumRepository _albumRepository;
         private readonly ILogger<AlbumService> _logger;
+        private readonly IPictureRepository _pictureRepository;
+        private readonly IAmazonS3 _s3Client;
+        private readonly IConfiguration _configuration;
+        private readonly string _bucketName;
 
-        public AlbumService(IAlbumRepository albumRepository, ILogger<AlbumService> logger, IRepositoryManager repositoryManager)
+        public AlbumService(IAlbumRepository albumRepository, ILogger<AlbumService> logger, IRepositoryManager repositoryManager, IPictureRepository pictureRepository, IAmazonS3 amazonS3, IConfiguration configuration)
         {
             _albumRepository = albumRepository;
             _logger = logger;
             _repositoryManager = repositoryManager;
+            _pictureRepository = pictureRepository;
+            _s3Client = amazonS3;
+            _configuration = configuration;
+
+            _bucketName = _configuration["BucketName"];
         }
 
 
@@ -67,7 +80,7 @@ namespace PhotoAlbum.Service.Services
             }
         }
 
-        public async Task<Album?> GetAlbumAsync(int id)
+        public async Task<AlbumDto?> GetAlbumAsync(int id)
         {
             try
             {
@@ -119,7 +132,7 @@ namespace PhotoAlbum.Service.Services
             }
         }
 
-        public async Task<IEnumerable<Album>> GetAlbumsByUserIdAsync(int userId)
+        public async Task<IEnumerable<AlbumDto>> GetAlbumsByUserIdAsync(int userId)
         {
             try
             {
@@ -130,6 +143,64 @@ namespace PhotoAlbum.Service.Services
                 _logger.LogError(ex, "Error while getting albums by user id.");
                 throw;
             }
+        }
+
+
+        //public async Task<byte[]> GetAlbumZipAsync(int albumId)
+        //{
+        //    var photos = await _pictureRepository.GetPicturesByAlbumIdAsync(albumId);
+
+        //    if (photos == null || !photos.Any())
+        //        throw new Exception("No photos found");
+
+        //    using var memoryStream = new MemoryStream();
+        //    using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+        //    {
+        //        foreach (var photo in photos)
+        //        {
+        //            var fileBytes = await System.IO.File.ReadAllBytesAsync(photo.Url);
+
+        //            var zipEntry = archive.CreateEntry(photo.Name ?? "photo.jpg", CompressionLevel.Fastest);
+        //            using var zipStream = zipEntry.Open();
+        //            await zipStream.WriteAsync(fileBytes, 0, fileBytes.Length);
+        //        }
+        //    }
+        //    memoryStream.Position = 0;
+        //    return memoryStream.ToArray();
+        //}
+
+
+        public async Task<byte[]> GetAlbumZipAsync(int albumId)
+        {
+            var photos = await _pictureRepository.GetPicturesByAlbumIdAsync(albumId);
+            if (photos == null || !photos.Any())
+                throw new Exception("No photos found");
+
+            using var memoryStream = new MemoryStream();
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                foreach (var photo in photos)
+                {
+                    var key = ExtractKeyFromUrl(photo.Url); // פונקציה שתפצל את ה-Key מתוך ה-URL של S3
+
+                    var response = await _s3Client.GetObjectAsync(_bucketName, key);
+                    using var responseStream = response.ResponseStream;
+
+                    var zipEntry = archive.CreateEntry(photo.Name ?? "photo.jpg", CompressionLevel.Fastest);
+                    using var zipStream = zipEntry.Open();
+                    await responseStream.CopyToAsync(zipStream);
+                }
+            }
+            memoryStream.Position = 0;
+            return memoryStream.ToArray();
+        }
+
+        private string ExtractKeyFromUrl(string url)
+        {
+            // נניח שכתובת ה-URL היא כמו https://bucketname.s3.region.amazonaws.com/key
+            // מחזירים את ה-key בלבד (החלק אחרי הדומיין)
+            var uri = new Uri(url);
+            return uri.AbsolutePath.TrimStart('/');
         }
     }
 }

@@ -1,5 +1,5 @@
 import React from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { cn } from "../../lib/utils"
 import { Button } from "../ui/button"
 import { Home, ImageIcon, FolderOpen, Upload, LogOut } from "lucide-react"
@@ -14,6 +14,7 @@ export function DashboardNav() {
   // ב-Vite+React בלי Next.js אפשר להשתמש ב-react-router
   const location = useLocation()
   const pathname = location.pathname
+  const navigate = useNavigate()
 
   const navItems: NavItem[] = [
     { title: "Dashboard", href: "/dashboard", icon: <Home className="mr-2 h-4 w-4" /> },
@@ -26,6 +27,8 @@ export function DashboardNav() {
 
   const handleClickLogout = () => {
     console.log('logout');
+    localStorage.setItem('token', '')
+    navigate('/')
   }
 
   return (
