@@ -239,7 +239,7 @@ builder.Services.AddCors(options =>
         // Add localhost only in development
         if (builder.Environment.IsDevelopment())
         {
-            origins = origins.Concat(new[] { "http://localhost:5173", "http://localhost:4200", "https://photoalbumclient.onrender.com" }).ToArray();
+            origins = origins.Concat(new[] { "http://localhost:5173", "http://localhost:4200", "https://photoalbumclient.onrender.com", "https://photoalbumadmin.onrender.com" }).ToArray();
         }
 
         policy.WithOrigins(origins)

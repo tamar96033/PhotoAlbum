@@ -22,7 +22,7 @@ namespace PhotoAlbum.Service.Services
             _repositoryManager = repositoryManager;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
         {
             return await _userRepository.GetAllUsersAsync();
         }

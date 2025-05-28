@@ -10,7 +10,7 @@ namespace PhotoAlbum.Core.IServices
 {
     public interface IUserService
     {
-        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<IEnumerable<UserDto>> GetAllUsersAsync();
         Task<IEnumerable<UserWithPictureDto>> GetAllUsersWithPicturesAsync();
         User? GetUserFromToken(string token);
     }

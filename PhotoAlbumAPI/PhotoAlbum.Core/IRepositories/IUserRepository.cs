@@ -15,7 +15,7 @@ namespace PhotoAlbum.Core.IRepositories
         Task<IEnumerable<Permission>> GetPermissionsByRoleIdAsync(int roleId);
         Task<Role> GetRoleByNameAsync(string roleName);
         Task<bool> RegisterUserWithRoleAsync(User user, string roleName);
-        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<IEnumerable<UserDto>> GetAllUsersAsync();
         Task<IEnumerable<UserWithPictureDto>> GetAllUsersWithPicturesAsync();
         User? GetUserById(int id);
     }

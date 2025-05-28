@@ -105,9 +105,41 @@ namespace PhotoAlbum.Data.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
         {
-            return _context.Users.ToList();
+            var users = await _context.Users
+                .Include(u => u.Albums)
+                .ThenInclude(a => a.Pictures)
+                .ToListAsync();
+
+            return users.Select(user => new UserDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Password = user.Password,
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = user.UpdatedAt,
+                Albums = user.Albums.Select(album => new AlbumDto
+                {
+                    Id = album.Id,
+                    Title = album.Title,
+                    Description = album.Description,
+                    CreatedAt = album.CreatedAt,
+                    UpdatedAt = album.UpdatedAt,
+                    Pictures = album.Pictures.Select(p => new PictureDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        UserId = p.UserId,
+                        Url = p.Url,
+                        CreatedAt = p.CreatedAt,
+                        UpdatedAt = p.UpdatedAt,
+                        AlbumTitle = album.Title,
+                        Base64ImageData = "" // optional: can populate if needed
+                    }).ToList()
+                }).ToList()
+            });
         }
 
         public async Task<IEnumerable<UserWithPictureDto>> GetAllUsersWithPicturesAsync()

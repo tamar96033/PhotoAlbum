@@ -20,7 +20,7 @@ namespace PhotoAlbum.API.Controllers
         }
 
         [HttpGet("all-users")]
-        [ProducesResponseType(typeof(List<User>), 200)]
+        [ProducesResponseType(typeof(List<UserDto>), 200)]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -30,6 +30,7 @@ namespace PhotoAlbum.API.Controllers
 
         [HttpGet("users-with-pictures")]
         [Authorize]
+        // [Authorize(Policy = "AdminOnly")]
         [ProducesResponseType(typeof(List<UserWithPictureDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUsersWithPictures()
         {
