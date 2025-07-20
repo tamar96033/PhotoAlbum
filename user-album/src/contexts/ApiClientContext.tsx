@@ -49,6 +49,7 @@ export const useApiClient = () => {
 
 export const ApiClientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const API_BASE_URL = import.meta.env.VITE_REACT_APP_API_URL;
+    console.log(API_BASE_URL);
 
     const apiClient = new ApiClient(API_BASE_URL)
 

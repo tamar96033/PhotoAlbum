@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent } from "../ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
@@ -87,6 +87,10 @@ export function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
   const apiClient = useApiClient()
   const token = "Bearer " + localStorage.getItem('token')
 
+  useEffect(()=>{
+    console.log(photos);
+    
+  }, [photos])
   const handleDownload = async (photo: PictureDto) => {
    console.log('on handledownload')
     toast({

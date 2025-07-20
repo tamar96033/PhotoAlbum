@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +37,9 @@ export function UploadForm() {
     const [files, setFiles] = useState<File[]>([]);
     const [previews, setPreviews] = useState<string[]>([]);
     const [isUploading, setIsUploading] = useState(false);
+
+    const [uploadMassage, setUploadMessage] = useState<string | null>(null);
+
     const apiClient = useApiClient()
     const token = "Bearer " + localStorage.getItem('token')
 
@@ -85,6 +88,10 @@ export function UploadForm() {
         updateFormValue(updatedFiles);
     };
 
+    useEffect(() => {
+        console.log('upload message changed:', uploadMassage);
+    }, [uploadMassage]);
+
     const handleUpload = async (data: FormData) => {
         setIsUploading(true);
         try {
@@ -92,11 +99,21 @@ export function UploadForm() {
 
             const fileParameters: FileParameter[] = files.map(toFileParameter);
             const result = await apiClient.uploadMultiple(token, fileParameters)
+            // const albumNames = result.map(p => p.albumName); // אם אתה מחזיר תמונות עם שדה albumName
+            // console.log('albumNames:', albumNames);
+            
+            setUploadMessage(`Uploaded to albums: ${[...new Set(result)].join(', ')}`);
+            console.log('upload message:', uploadMassage);
+            
 
             console.log('the files upload successfully. result:', result);
             setFiles([]);
             setPreviews([]);
             form.reset();
+            
+setTimeout(() => {
+  setUploadMessage(null);
+}, 5000); // 5 שניות
         } catch {
             alert("Upload failed. Please try again.");
         } finally {
@@ -152,6 +169,9 @@ export function UploadForm() {
                 <p className="text-red-500 text-sm">{form.formState.errors.images.message}</p>
             )}
 
+            {uploadMassage && (
+                <div className="text-green-600 text-sm mt-2">{uploadMassage}</div>
+            )}
             <div className="flex justify-end">
                 <button
                     type="submit"
@@ -162,6 +182,8 @@ export function UploadForm() {
                     {isUploading ? "Uploading..." : `Upload ${files.length} Photo(s)`}
                 </button>
             </div>
+
+
         </form>
     );
 }

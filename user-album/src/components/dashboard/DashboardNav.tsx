@@ -18,7 +18,7 @@ export function DashboardNav() {
 
   const navItems: NavItem[] = [
     { title: "Dashboard", href: "/dashboard", icon: <Home className="mr-2 h-4 w-4" /> },
-    { title: "All Photos", href: "/dashboard/photos", icon: <ImageIcon className="mr-2 h-4 w-4" /> },
+    { title: "All Photos", href: "/dashboard", icon: <ImageIcon className="mr-2 h-4 w-4" /> },
     { title: "Albums", href: "/dashboard/albums", icon: <FolderOpen className="mr-2 h-4 w-4" /> },
     // { title: "Tags", href: "/dashboard/tags", icon: <Tag className="mr-2 h-4 w-4" /> },
     { title: "Upload", href: "/dashboard/upload", icon: <Upload className="mr-2 h-4 w-4" /> },

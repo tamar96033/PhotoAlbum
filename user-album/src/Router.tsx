@@ -8,38 +8,55 @@ import GaleryPage from "./pages/GaleryPage";
 import LandingPage from "./pages/LandingPage";
 import RegisterPage from "./pages/RegisterPage";
 
-import DashboardPage from "./pages/DashboardPage";
+// import DashboardPage from "./pages/DashboardPage";
 import PhotosPage from "./pages/PhotosPage";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import UploadPage from "./pages/UploadPage";
 import AlbumDetailPage from "./pages/AlbumDetailPage";
 import TermsPage from "./pages/TermPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import { RequireAuth } from "./components/RequireAuth";
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <AppLayout/>,
-        children:[
+        element: <AppLayout />,
+        children: [
             // {path: '', element: <HomePage/>},
-            {path: '', element: <LandingPage/>},
-            {path: 'terms', element: <TermsPage/>},
-            {path: 'privacy', element: <PrivacyPage/>},
-            {path:'login', element: <LoginPage/>},
-            {path:'register', element: <RegisterPage/>},
-            {path: 'dashboard/', element: <DashboardLayout/>, children:[
-                {path: '', element: <DashboardPage/>},
-                {path: 'photos', element: <PhotosPage/>},
-                {path: 'upload', element: <UploadPage/>},
-                {path: 'albums', element: <AlbumsPage/>},
-                { path: 'albums/:id', element: <AlbumDetailPage /> },
-            ]},
-            {path: 'photos', element: <PhotosPage/>},
-            {path: 'pictures', element: <GaleryPage/>},
-            // {path: 'albums', element: <AlbumsPage/>},
-            // { path: 'albums/:id', element: <AlbumDetails /> },
-            {path: 'tags', element: <TagsPage/>},
-            {path: '*', element: <NotFoundPage/>},
+            { path: '', element: <LandingPage /> },
+            { path: 'terms', element: <TermsPage /> },
+            { path: 'privacy', element: <PrivacyPage /> },
+            { path: 'login', element: <LoginPage /> },
+            { path: 'register', element: <RegisterPage /> },
+            {
+                element: <RequireAuth><DashboardLayout /></RequireAuth>,
+                children: [
+                    { path: 'dashboard', element: <PhotosPage /> },
+                    // { path: 'dashboard/photos', element: <PhotosPage /> },
+                    { path: 'dashboard/upload', element: <UploadPage /> },
+                    { path: 'dashboard/albums', element: <AlbumsPage /> },
+                    { path: 'dashboard/albums/:id', element: <AlbumDetailPage /> },
+
+                    // Optional: allow these to work as aliases outside dashboard
+                    { path: 'photos', element: <PhotosPage /> },
+                    { path: 'pictures', element: <GaleryPage /> },
+                    { path: 'tags', element: <TagsPage /> },
+                ],
+            },
+
+            // {path: 'dashboard/', element: <DashboardLayout/>, children:[
+            //     {path: '', element: <DashboardPage/>},
+            //     {path: 'photos', element: <PhotosPage/>},
+            //     {path: 'upload', element: <UploadPage/>},
+            //     {path: 'albums', element: <AlbumsPage/>},
+            //     { path: 'albums/:id', element: <AlbumDetailPage /> },
+            // ]},
+            // {path: 'photos', element: <PhotosPage/>},
+            // {path: 'pictures', element: <GaleryPage/>},
+            // // {path: 'albums', element: <AlbumsPage/>},
+            // // { path: 'albums/:id', element: <AlbumDetails /> },
+            // {path: 'tags', element: <TagsPage/>},
+            { path: '*', element: <NotFoundPage /> },
         ]
     }
 ])
